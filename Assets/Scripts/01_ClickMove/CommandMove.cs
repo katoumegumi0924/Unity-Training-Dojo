@@ -11,6 +11,9 @@ public class CommandMove : MonoBehaviour
     // 提示：Queue<Vector3>
     private Queue<Vector3> moveQueue = new Queue<Vector3>();
 
+    //用来标记状态
+    private bool isWalking = false;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -57,6 +60,17 @@ public class CommandMove : MonoBehaviour
             return;
         }
 
+        // --- 代码能走到这里，说明 Agent 已经停下来了（或者刚开始没动） ---
+        // 如果刚才记录的状态是 isWalking (在走)，但现在停了
+        // 说明：刚刚到达了目的地！
+        if ( isWalking)
+        {
+            //触发事件
+            GameEvents.TriggerArrived();
+            //到了之后，先标记为“没在走”，等待下一个命令
+            isWalking = false;
+        }
+
         // 2. 如果闲下来了，检查队列里还有没有任务？
         if (moveQueue.Count > 0)
         {
@@ -66,6 +80,9 @@ public class CommandMove : MonoBehaviour
 
             // 让 Agent 走过去
             agent.SetDestination(nextTarget);
+
+            //开始前往下一个地点，标记isWalking
+            isWalking = true;
         }
     }
 
