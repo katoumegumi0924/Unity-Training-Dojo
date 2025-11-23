@@ -39,6 +39,7 @@ public class CommandMove : MonoBehaviour
                 moveQueue.Enqueue(hitInfo.point);
 
                 // (可选) 可以在这里生成一个小球特效，标记一下点击的位置
+                FXManager.instance.ShowEffect(hitInfo.point);
             }
         }
 
