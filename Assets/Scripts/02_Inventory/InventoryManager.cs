@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,6 +41,9 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    //定义一个事件：当背包数据发生变化时触发
+    public event Action OnInventoryChanged;
+
     //背包容器，就是一个格子的列表
     //使用列表方便有序的显示
     public List<InventorySlot> backpack = new List<InventorySlot>();
@@ -73,6 +77,9 @@ public class InventoryManager : MonoBehaviour
             backpack.Add( newSlot );
             Debug.Log($"[背包] 获得新物品: {data.itemName} x{count}");
         }
+
+        // 通知 UI：数据变啦，快刷新！
+        OnInventoryChanged?.Invoke();
     }
 
     // 仅用于测试，正式上线要删掉
