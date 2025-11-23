@@ -16,7 +16,7 @@
 
 <div align="center">
   <!-- 请确保你的 Docs 文件夹里有这张图，名字要对应 -->
-  <img src="./Docs/demo_rts.gif" width="600" />
+  <img src="./gif/demo_rts.gif" width="600" />
 </div>
 
 ### 1.1 系统概述 (Overview)
@@ -39,7 +39,7 @@
 
 <div align="center">
   <!-- 请确保你的 Docs 文件夹里有这张图，名字要对应 -->
-  <img src="./Docs/demo_inventory.gif" width="600" />
+  <img src="./gif/demo_inventory.gif" width="600" />
 </div>
 
 ### 2.1 系统概述 (Overview)
