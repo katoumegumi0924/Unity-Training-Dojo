@@ -47,7 +47,7 @@ public class PatrolState : IState
 
         //ÇÐ»»Âß¼­
         //¼ì²âÍæ¼Ò¾àÀë
-        float dis = Vector3.Distance(manager.transform.position, manager.Player.position);
+        float dis = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
 
         if( manager.detectRange > dis)
         {

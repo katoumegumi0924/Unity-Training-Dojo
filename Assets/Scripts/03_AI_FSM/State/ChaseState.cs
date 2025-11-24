@@ -43,10 +43,10 @@ public class ChaseState : IState
 
         // --- 1. 追击逻辑 ---
         // 每帧都把目标设为玩家的位置
-        manager.agent.SetDestination(manager.Player.position);
+        manager.agent.SetDestination(GameManager.instance.Player.position);
 
         //检测玩家位置
-        float dist = Vector3.Distance(manager.transform.position, manager.Player.position);
+        float dist = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
 
         if (dist > manager.detectRange * 1.5f) // 乘以1.5是为了防止在边界反复横跳（防抖）
         {

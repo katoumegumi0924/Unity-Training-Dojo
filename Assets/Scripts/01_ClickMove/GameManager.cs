@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
     //单例模式
     public static GameManager instance { get; private set; }
 
+    // 新增：全局唯一的玩家引用
+    // set 是私有的，防止别人乱改；get 是公开的，供大家查询
+    public Transform Player {  get; private set; }
+
     private void Awake()
     {
         //初始化
@@ -20,6 +24,16 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if(playerObj != null)
+        {
+            Player = playerObj.transform;
+        }
+        else
+        {
+            Debug.LogError("GameManager: 场景里找不到 Tag 为 Player 的物体！");
         }
     }
 

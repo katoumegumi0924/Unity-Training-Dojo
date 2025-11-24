@@ -6,14 +6,14 @@ using UnityEngine.AI;
 //敌人状态机管理器
 public class EnemyController : MonoBehaviour
 {
-    //状态机核心 当前状态
-    public IState currentState;
+    //状态机
+    private StateMachine stateMachine;
 
     //所有状态共享的数据和组件
     [HideInInspector]
     public NavMeshAgent agent;      //寻路组件
-    [HideInInspector]
-    public Transform Player;        //玩家位置
+    //[HideInInspector]
+    //public Transform Player;        //玩家位置
 
     //参数配置
     public float patrolSpeed = 2.0f;    //巡逻速度
@@ -24,42 +24,29 @@ public class EnemyController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         // 假设场景里只有一个 Player (Tag 查找)
-        Player = GameObject.FindGameObjectWithTag("Player").transform;
+        // Player = GameObject.FindGameObjectWithTag("Player").transform;
+
+        //初始化状态机
+        stateMachine = new StateMachine();
     }
 
     // Start is called before the first frame update
     void Start()
     {
         // 启动！先进入巡逻状态
-        TransitionToState(new PatrolState(this));
+        stateMachine.Initialize(new PatrolState(this));
     }
 
     // Update is called once per frame
     void Update()
     {
         //核心逻辑，在update中反复调用当前状态的OnUpdate
-        if (currentState != null)
-        {
-            currentState.OnUpdate();
-        }
+        stateMachine.Update();
     }
 
-    //切换状态的方法
+    //切换状态的方法 调用状态机实现
     public void TransitionToState( IState newState )
     {
-        //先退出当前状态
-        if( currentState != null)
-        {
-            currentState.OnExit();
-        }
-
-        //当前状态切换为新状态
-        currentState = newState;
-
-        //进入新状态
-        if( currentState != null)
-        {
-            currentState.OnEnter();
-        }      
+        stateMachine.ChangeState(newState);    
     }
 }
