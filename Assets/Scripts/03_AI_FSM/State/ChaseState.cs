@@ -48,9 +48,15 @@ public class ChaseState : IState
         //检测玩家位置
         float dist = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
 
+        //玩家位置超过检测距离 切换到巡逻状态
         if (dist > manager.detectRange * 1.5f) // 乘以1.5是为了防止在边界反复横跳（防抖）
         {
             manager.TransitionToState(manager.PatrolState);
+        }
+        //玩家位置进入攻击范围 切换到攻击状态
+        else if( dist < manager.attackRange )
+        {
+            manager.TransitionToState(manager.AttackState);
         }
     }
 }

@@ -21,7 +21,7 @@ public class PatrolState : IState
         //设置巡逻速度
         manager.agent.speed = manager.patrolSpeed;
         Debug.Log("进入状态：巡逻 (Patrol)");
-        //MoveToRandomPos();
+        MoveToRandomPos();
     }
 
     public void OnExit()
@@ -63,7 +63,6 @@ public class PatrolState : IState
         Vector3 randomPoint = Random.insideUnitSphere * 5f + manager.transform.position;
 
         // 这里的 SamplePosition 是为了保证随机点一定在 NavMesh 地面上，防止点到墙里
-        //??
         UnityEngine.AI.NavMeshHit hit;
         UnityEngine.AI.NavMesh.SamplePosition(randomPoint, out hit, 5f, 1);
 

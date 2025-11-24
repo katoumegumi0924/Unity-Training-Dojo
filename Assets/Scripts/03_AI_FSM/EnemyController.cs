@@ -18,12 +18,15 @@ public class EnemyController : MonoBehaviour
     //²ÎÊıÅäÖÃ
     public float patrolSpeed = 2.0f;    //Ñ²ÂßËÙ¶È
     public float chaseSpeed = 4.0f;     //×·»÷ËÙ¶È
-    public float detectRange = 10.0f;   //¼ì²â·¶Î§
+    public float detectRange = 5.0f;   //×·»÷¼ì²â·¶Î§
+    public float attackRange = 0.5f;   //¹¥»÷¼ì²â·¶Î§
+    public float attackInterval = 1f; // ¹¥»÷¼ä¸ô (Ãë)
 
     // ¶¨Òå±äÁ¿À´»º´æ×´Ì¬
-    
+
     public PatrolState PatrolState { get; private set; }
     public ChaseState ChaseState { get; private set; }
+    public AttackState AttackState { get; private set; }
 
     private void Awake()
     {
@@ -36,6 +39,7 @@ public class EnemyController : MonoBehaviour
 
         PatrolState = new PatrolState(this);
         ChaseState = new ChaseState(this);
+        AttackState = new AttackState(this);
     }
 
     // Start is called before the first frame update
