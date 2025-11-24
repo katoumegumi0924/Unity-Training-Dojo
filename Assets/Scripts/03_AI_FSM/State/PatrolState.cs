@@ -51,8 +51,8 @@ public class PatrolState : IState
 
         if( manager.detectRange > dis)
         {
-            //发现玩家，切换状态
-            manager.TransitionToState(new ChaseState(manager));
+            //发现玩家，切换到追击状态
+            manager.TransitionToState(manager.ChaseState);
         }
     }
 

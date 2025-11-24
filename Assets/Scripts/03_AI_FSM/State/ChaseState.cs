@@ -50,7 +50,7 @@ public class ChaseState : IState
 
         if (dist > manager.detectRange * 1.5f) // 乘以1.5是为了防止在边界反复横跳（防抖）
         {
-            manager.TransitionToState(new PatrolState(manager));
+            manager.TransitionToState(manager.PatrolState);
         }
     }
 }

@@ -20,6 +20,11 @@ public class EnemyController : MonoBehaviour
     public float chaseSpeed = 4.0f;     //追击速度
     public float detectRange = 10.0f;   //检测范围
 
+    // 定义变量来缓存状态
+    
+    public PatrolState PatrolState { get; private set; }
+    public ChaseState ChaseState { get; private set; }
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -28,13 +33,16 @@ public class EnemyController : MonoBehaviour
 
         //初始化状态机
         stateMachine = new StateMachine();
+
+        PatrolState = new PatrolState(this);
+        ChaseState = new ChaseState(this);
     }
 
     // Start is called before the first frame update
     void Start()
     {
         // 启动！先进入巡逻状态
-        stateMachine.Initialize(new PatrolState(this));
+        stateMachine.Initialize(PatrolState);
     }
 
     // Update is called once per frame
