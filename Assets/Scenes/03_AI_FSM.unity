@@ -312,7 +312,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 238981969}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fd2ce6e695d53449ba5b67b232b7c34, type: 3}
   m_Name: 
@@ -885,7 +885,9 @@ MonoBehaviour:
   agent: {fileID: 0}
   patrolSpeed: 2
   chaseSpeed: 4
-  detectRange: 3
+  detectRange: 5
+  attackRange: 1.5
+  attackInterval: 1
 --- !u!136 &1307736101
 CapsuleCollider:
   m_ObjectHideFlags: 0

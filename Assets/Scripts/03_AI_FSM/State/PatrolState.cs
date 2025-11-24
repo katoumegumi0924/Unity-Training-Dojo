@@ -20,6 +20,8 @@ public class PatrolState : IState
     {
         //设置巡逻速度
         manager.agent.speed = manager.patrolSpeed;
+        //设置训练状态颜色
+        manager.SetColor(Color.green);
         Debug.Log("进入状态：巡逻 (Patrol)");
         MoveToRandomPos();
     }

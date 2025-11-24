@@ -15,6 +15,8 @@ public class ChaseState : IState
     {
         //设置追击速度
         manager.agent.speed = manager.chaseSpeed;
+        //设置追击状态颜色
+        manager.SetColor(Color.yellow);
         Debug.Log("进入状态：追击 (Chase) !!!");
     }
 
@@ -49,7 +51,7 @@ public class ChaseState : IState
         float dist = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
 
         //玩家位置超过检测距离 切换到巡逻状态
-        if (dist > manager.detectRange * 1.5f) // 乘以1.5是为了防止在边界反复横跳（防抖）
+        if (dist > manager.detectRange + 0.1f) // 乘以1.5是为了防止在边界反复横跳（防抖）
         {
             manager.TransitionToState(manager.PatrolState);
         }

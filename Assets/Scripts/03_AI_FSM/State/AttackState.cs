@@ -18,6 +18,8 @@ public class AttackState : IState
     {
         //停止移动 进行攻击
         manager.agent.isStopped = true;
+        //设置攻击状态颜色
+        manager.SetColor(Color.red);
         Debug.Log("进入状态：攻击 (Attack) !!!");
 
         // 进入时重置计时器，让它能“立刻”或者“稍微等一下”再攻击
@@ -44,7 +46,7 @@ public class AttackState : IState
         //距离超过了攻击距离，切换到追击状态
         // 只有当距离 大于 (攻击距离 + 缓冲距离) 时才追
         // 比如攻击距离是 2，那跑到 2.5 米开外才开始追
-        if (dis > manager.attackRange + 0.5f)
+        if (dis > manager.attackRange + 0.1f)
         {
             manager.TransitionToState(manager.ChaseState);
         }
