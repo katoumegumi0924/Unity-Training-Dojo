@@ -49,11 +49,18 @@ public class PatrolState : IState
 
         //切换逻辑
         //检测玩家距离
-        float dis = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
+        //float dis = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
 
-        if( manager.detectRange > dis)
+        //if( manager.detectRange > dis)
+        //{
+        //    //发现玩家，切换到追击状态
+        //    manager.TransitionToState(manager.ChaseState);
+        //}
+
+        // 新逻辑：靠眼睛 (Vision)
+        // 只有当眼睛说“看见了”，才追
+        if (manager.vision.canSeePlayer)
         {
-            //发现玩家，切换到追击状态
             manager.TransitionToState(manager.ChaseState);
         }
     }

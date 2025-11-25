@@ -16,8 +16,8 @@ public class EnemyController : MonoBehaviour
     //所有状态共享的数据和组件
     [HideInInspector]
     public NavMeshAgent agent;      //寻路组件
-    //[HideInInspector]
-    //public Transform Player;        //玩家位置
+    [HideInInspector]
+    public EnemyVision vision;      //视线范围检测
     
     //参数配置
     public float patrolSpeed = 2.0f;    //巡逻速度
@@ -36,6 +36,7 @@ public class EnemyController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         meshRenderer = GetComponent<MeshRenderer>();
+        vision = GetComponent<EnemyVision>();
         // 假设场景里只有一个 Player (Tag 查找)
         // Player = GameObject.FindGameObjectWithTag("Player").transform;
 
