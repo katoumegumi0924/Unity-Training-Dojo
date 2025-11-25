@@ -103,11 +103,50 @@ AI的“视觉感知”不依赖Update每帧进行检测，通过协程 **每0.2
     *   在 `Awake` 阶段预先实例化所有状态对象（`PatrolState`, `ChaseState`, `AttackState`）。
     *   运行时仅切换引用，**避免了频繁 `new` 状态对象导致的内存垃圾 (Garbage)**。
 
-
-##
-
-
 ---
+
+## 4. UI 动效与反馈 (UI Motion & Feedback)
+<div align="center">
+  <img src="./gif/demo_dotween.gif" width="600" />
+</div>
+
+### 4.1 系统概述 (Overview)
+引入 **DOTween** 插件，将原本的 UI 交互升级动态交互。
+重点实现了 **非线性动画 (Easing)**、**屏幕空间映射** 以及 **交互防抖** 机制，提升了视觉体验。
+
+### 4.2 核心技术点 (Technical Highlights)
+#### 🎨 动画与交互 (Animation & Interaction)
+* **弹窗动画**： 使用 `DOScale` 配合 `Ease.OutBack` (回弹曲线)，实现背包面板的 Q 弹开关效果。
+*   **飞行轨迹**：实现物品从“3D世界”到“2D UI”的飞行动画。
+    *   使用 `Camera.WorldToScreenPoint` 进行坐标转换。
+    *   利用 `OnComplete` 回调，确保动画播放完毕后才刷新数据，保证视觉逻辑的连贯性。
+*   **交互防抖**：在所有 UI 动画前调用 `DOKill()`，防止玩家高频操作（如疯狂按开关键）导致动画状态错乱或鬼畜。
+
+#### 🏗️ 架构调整 (Architecture Support)
+为了配合动画表现，对 MVC 架构进行了微调：
+*   **静默添加模式 (Silent Mode)**：
+    *   重载 `InventoryManager.AddItem` 方法，增加 `autoUpdateUI` 参数。
+    *   允许在播放动画时暂时挂起 UI 刷新，待动画结束后手动刷新，解决了“动画未到，数据先变”的穿帮问题
+#### ⚡ 性能优化：列表智能刷新 (Smart Refresh)
+重构了背包列表的刷新逻辑，放弃了低效的“全删全建”方式，采用 **差量更新** 策略：
+1.  **复用 (Reuse)**：优先使用现有的 UI 格子，仅更新图标和数字。
+2.  **增补 (Add)**：仅在数据量 > 格子量时实例化新格子。
+3.  **裁剪 (Trim)**：仅在数据量 < 格子量时销毁多余格子。
+*   **结果**：将 UI 刷新的 **GC 和 CPU 开销降至最低**，即使每秒捡起 10 个物品也不会卡顿。
+#### 🚀 C# 扩展方法与链式编程
+利用 DOTween 的链式 API 实现复杂的序列动画：
+
+```csharp
+flyIcon.transform
+    .DOMove(targetPos, 0.8f)       // 1. 移动
+    .SetEase(Ease.InBack)          // 2. 设置蓄力曲线
+    .OnComplete(() =>              // 3. 动画结束回调
+    {
+        Destroy(flyIcon);          // 销毁临时图标
+        bagButton.DOKill(true);    // 停止旧震动
+        bagButton.DOShakeAnchorPos(0.2f, 10); // 按钮震动反馈
+        RefreshUI();               // 手动刷新数据
+    });
 
 ## 🛠️ 开发环境
 *   **Engine**: Unity 2021.3 LTS (或你的版本)
