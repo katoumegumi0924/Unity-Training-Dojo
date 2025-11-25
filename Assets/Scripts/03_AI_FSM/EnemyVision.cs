@@ -1,76 +1,113 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
 #if UNITY_EDITOR
-using UnityEditor; // ÒıÈë±à¼­Æ÷ÃüÃû¿Õ¼äÓÃÓÚ»­Í¼
+using UnityEditor; // å¼•å…¥ç¼–è¾‘å™¨å‘½åç©ºé—´ç”¨äºç”»å›¾
 #endif
 
 
-//µĞÈËÊÓÒ°·¶Î§¼ì²â
+//æ•Œäººè§†é‡èŒƒå›´æ£€æµ‹
 public class EnemyVision : MonoBehaviour
 {
-    [Header("ÊÓÒ°ÅäÖÃ")]
-    public float viewRadius = 8f;   //ÊÓ¾à£¬ÄÜ¿´¶àÔ¶
+    [Header("è§†é‡é…ç½®")]
+    public float viewRadius = 8f;   //è§†è·ï¼Œèƒ½çœ‹å¤šè¿œ
     [Range(0, 360)]
-    public float viewAngle = 90f;   //ÊÓÒ°½Ç¶È(ÉÈĞÎÊÓÒ°ÕÅ¿ªµÄ½Ç¶È)
+    public float viewAngle = 90f;   //è§†é‡è§’åº¦(æ‰‡å½¢è§†é‡å¼ å¼€çš„è§’åº¦)
 
-    public LayerMask targetMask;    //Ä¿±ê²ã
-    public LayerMask obstacleMask;  //ÕÏ°­Îï²ã
+    public LayerMask targetMask;    //ç›®æ ‡å±‚
+    public LayerMask obstacleMask;  //éšœç¢ç‰©å±‚
 
-    [Header("¿ÉÊÓ×´Ì¬")]
-    public bool canSeePlayer = false;       //×îÖÕ½á¹û£¬ÄÜ·ñ¿´¼ûÍæ¼Ò
+    [Header("å¯è§†çŠ¶æ€")]
+    public bool canSeePlayer = false;       //æœ€ç»ˆç»“æœï¼Œèƒ½å¦çœ‹è§ç©å®¶
 
-    // --- ºËĞÄ¹¦ÄÜ£º¼ì²â ---
+    // --- æ ¸å¿ƒåŠŸèƒ½ï¼šæ£€æµ‹ ---
     public void CheckSight()
     {
-        //Ä¬ÈÏ¿´²»¼û Ã¿´Î¼ì²âÖØÖÃ
+        //é»˜è®¤çœ‹ä¸è§ æ¯æ¬¡æ£€æµ‹é‡ç½®
         canSeePlayer = false;
 
-        //·¶Î§¼ì²â£¬»ñÈ¡Ô²ĞÎ°ë¾¶ÄÚËùÓĞµÄ¡°Target¡±
+        //èŒƒå›´æ£€æµ‹ï¼Œè·å–åœ†å½¢åŠå¾„å†…æ‰€æœ‰çš„â€œTargetâ€
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
 
-        //±éÀú·¶Î§ÄÚËùÓĞµÄ¡°Target¡±
+        //éå†èŒƒå›´å†…æ‰€æœ‰çš„â€œTargetâ€
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
             Transform target = targetsInViewRadius[i].transform;
 
-            //¼ÆËãÎïÌå·½Ïò
+            //è®¡ç®—ç‰©ä½“æ–¹å‘
             Vector3 dirToTarget = (target.position - transform.position).normalized;
 
-            //½øĞĞ½Ç¶È¼ì²â£¬ÅĞ¶ÏÄ¿±êÊÇ·ñÔÚÊÓÒ°·¶Î§ÄÚ
-            if( Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            // ç”¨ç‚¹ä¹˜ (Dot) åˆ¤æ–­è§’åº¦ 
+            //è®¡ç®—æˆ‘ä»¬é¢å¯¹çš„æ–¹å‘å’Œç›®æ ‡æ–¹å‘çš„â€œç›¸ä¼¼åº¦â€ (Coså€¼)
+            float dotResult = Vector3.Dot(transform.forward, dirToTarget);
+            //è®¡ç®—è§†é‡é—¨æ§› (æŠŠè§’åº¦è½¬æˆ Cos å€¼)
+            float angleThreshold = Mathf.Cos( (viewAngle/2) * Mathf.Deg2Rad );
+
+            // 3. æ¯”è¾ƒ (æ³¨æ„æ˜¯å¤§äºå·ï¼å› ä¸ºè§’åº¦è¶Šå°ï¼ŒCoså€¼è¶Šå¤§)
+            if (dotResult > angleThreshold)
             {
-                //ÓëÄ¿±êµÄ¾àÀë
+                //ç”¨å‰ä¹˜ (Cross) åˆ¤æ–­å·¦å³
+                // è™½ç„¶å¯¹äº"æ˜¯å¦çœ‹è§"ä¸é‡è¦ï¼Œä½†è¿™èƒ½å¸®ä½ åˆ¤æ–­æ–¹ä½
+                Vector3 crossResult = Vector3.Cross(transform.forward, dirToTarget);
+
+                if (crossResult.y > 0)
+                    Debug.Log("ç©å®¶åœ¨å³ä¾§ ğŸ‘‰");
+                else
+                    Debug.Log("ç©å®¶åœ¨å·¦ä¾§ ğŸ‘ˆ");
+
+                //ä¸ç›®æ ‡çš„è·ç¦»
                 float dstToTarget = Vector3.Distance(transform.position, target.position);
 
-                //ÕÚµ²¼ì²â ÏñÄ¿±êÎ»ÖÃ·¢³öÉäÏß½øĞĞ¼ì²â
-                //Èç¹ûÃ»ÓĞÅöµ½Obstacle ²ã£¬ËµÃ÷ÊÓÏßÍ¨³©
-                if ( !Physics.Raycast( transform.position, dirToTarget,dstToTarget,obstacleMask ))
+                //é®æŒ¡æ£€æµ‹ åƒç›®æ ‡ä½ç½®å‘å‡ºå°„çº¿è¿›è¡Œæ£€æµ‹
+                //å¦‚æœæ²¡æœ‰ç¢°åˆ°Obstacle å±‚ï¼Œè¯´æ˜è§†çº¿é€šç•…
+                if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
                 {
-                    // Èı¹ØÈ«¹ı£º¿´¼ûÁË£¡
+                    // ä¸‰å…³å…¨è¿‡ï¼šçœ‹è§äº†ï¼
                     canSeePlayer = true;
-                    // Èç¹û¿´¼ûÁË£¬»­ÂÌÏß
+                    // å¦‚æœçœ‹è§äº†ï¼Œç”»ç»¿çº¿
                     Debug.DrawRay(transform.position, dirToTarget * dstToTarget, Color.green, 0.2f);
                 }
                 else
                 {
-                    // Èç¹û±»µ²×¡ÁË£¬»­ºìÏß
+                    // å¦‚æœè¢«æŒ¡ä½äº†ï¼Œç”»çº¢çº¿
                     Debug.DrawRay(transform.position, dirToTarget * dstToTarget, Color.red, 0.2f);
                 }
             }
+
+            //è¿›è¡Œè§’åº¦æ£€æµ‹ï¼Œåˆ¤æ–­ç›®æ ‡æ˜¯å¦åœ¨è§†é‡èŒƒå›´å†…
+            //if ( Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            //{
+            //    //ä¸ç›®æ ‡çš„è·ç¦»
+            //    float dstToTarget = Vector3.Distance(transform.position, target.position);
+
+            //    //é®æŒ¡æ£€æµ‹ åƒç›®æ ‡ä½ç½®å‘å‡ºå°„çº¿è¿›è¡Œæ£€æµ‹
+            //    //å¦‚æœæ²¡æœ‰ç¢°åˆ°Obstacle å±‚ï¼Œè¯´æ˜è§†çº¿é€šç•…
+            //    if ( !Physics.Raycast( transform.position, dirToTarget,dstToTarget,obstacleMask ))
+            //    {
+            //        // ä¸‰å…³å…¨è¿‡ï¼šçœ‹è§äº†ï¼
+            //        canSeePlayer = true;
+            //        // å¦‚æœçœ‹è§äº†ï¼Œç”»ç»¿çº¿
+            //        Debug.DrawRay(transform.position, dirToTarget * dstToTarget, Color.green, 0.2f);
+            //    }
+            //    else
+            //    {
+            //        // å¦‚æœè¢«æŒ¡ä½äº†ï¼Œç”»çº¢çº¿
+            //        Debug.DrawRay(transform.position, dirToTarget * dstToTarget, Color.red, 0.2f);
+            //    }
+            //}
         }
         Debug.Log("canSeePlayer: " + canSeePlayer);
     }
 
     private void Start()
     {
-        // ¿ªÆôĞ­³Ì£ºÃ¿ 0.2 Ãë¼ì²âÒ»´Î
+        // å¼€å¯åç¨‹ï¼šæ¯ 0.2 ç§’æ£€æµ‹ä¸€æ¬¡
         StartCoroutine(FindTargetWithDelay(0.2f));   
     }
 
-    //Ğ­³Ìº¯Êı Ã¿¸ô0.2sÖ´ĞĞÒ»´ÎCheckSight()
+    //åç¨‹å‡½æ•° æ¯éš”0.2sæ‰§è¡Œä¸€æ¬¡CheckSight()
     IEnumerator FindTargetWithDelay(float delay)
     {
         while (true)
@@ -81,15 +118,15 @@ public class EnemyVision : MonoBehaviour
         } 
     }
 
-    // --- ¿ÉÊÓ»¯µ÷ÊÔ (»­³öÉÈĞÎ) ---
+    // --- å¯è§†åŒ–è°ƒè¯• (ç”»å‡ºæ‰‡å½¢) ---
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        // 1. »­ÊÓ¾àÔ²
+        // 1. ç”»è§†è·åœ†
         Handles.color = new Color(1, 1, 1, 0.2f);
         Handles.DrawWireDisc(transform.position, Vector3.up, viewRadius);
 
-        // 2. »­ÉÈĞÎµÄÁ½Ìõ±ß
+        // 2. ç”»æ‰‡å½¢çš„ä¸¤æ¡è¾¹
         Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
         Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
 
@@ -97,25 +134,25 @@ public class EnemyVision : MonoBehaviour
         Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
         Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
 
-        // 3. Á¬ÏßÌáÊ¾
+        // 3. è¿çº¿æç¤º
         if (canSeePlayer)
         {
             Handles.color = Color.green;
-            // ¼ÙÉèÍæ¼ÒÊÇµ¥Àı£¬·½±ã»­Ïß
+            // å‡è®¾ç©å®¶æ˜¯å•ä¾‹ï¼Œæ–¹ä¾¿ç”»çº¿
             if (GameManager.instance.Player != null)
                 Handles.DrawLine(transform.position, GameManager.instance.Player.position);
         }
     }
 
-    // ¸¨Öúº¯Êı£º¸ù¾İ½Ç¶ÈËã³ö·½ÏòÏòÁ¿
+    // è¾…åŠ©å‡½æ•°ï¼šæ ¹æ®è§’åº¦ç®—å‡ºæ–¹å‘å‘é‡
     private Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
-        //´¦Àí¾Ö²¿×ø±ê
+        //å¤„ç†å±€éƒ¨åæ ‡
         if (!angleIsGlobal)
         {
             angleInDegrees += transform.eulerAngles.y;
         }
-        // Èı½Çº¯Êı¹«Ê½ (²»ĞèÒªËÀ¼Ç£¬ÖªµÀÊÇÓÃ Sin/Cos Ëã×ø±ê¼´¿É)
+        // ä¸‰è§’å‡½æ•°å…¬å¼ (ä¸éœ€è¦æ­»è®°ï¼ŒçŸ¥é“æ˜¯ç”¨ Sin/Cos ç®—åæ ‡å³å¯)
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 

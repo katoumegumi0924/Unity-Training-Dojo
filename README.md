@@ -84,9 +84,15 @@
 AI的“视觉感知”不依赖Update每帧进行检测，通过协程 **每0.2s** 进行一次低频扫描，优化性能。检测逻辑分为三步：
 1. **范围检测**：
 *    使用 `Physics.OverlapSphere` 获取视距范围内所有潜在目标（利用`LayerMask`过滤无关的物体）。
-2. **角度检测**：
-*    使用`Vector3.Angle` 计算 `transform.forward` (面朝方向) 与 `dirToTarget` (目标方向) 的夹角
-*    如果夹角小于`viewAngle/2`，则判定目标在扇形视野范围内。
+2. **角度检测 (Angle Detection)**：
+  *   **方案一：基础做法 (Standard)**
+        *   使用 `Vector3.Angle` 直接计算 `transform.forward` 与 `dirToTarget` 的夹角。
+        *   若夹角小于 `viewAngle/2`，则判定在视野内。
+  *   **方案二：性能优化 (Optimization) [当前采用]**
+        *   **原理**：放弃开销较大的 `Vector3.Angle` (内部涉及 `Acos` 反三角函数)，改用 **点乘 (Dot Product)**。
+        *   **算法**：计算 `Vector3.Dot(transform.forward, dirToTarget)`。
+        *   **判定**：若点乘结果 **大于** 视野半角的余弦值 (`Mathf.Cos(angle/2)`)，即判定在扇形范围内。
+        *   *(扩展：使用 **叉乘 (Cross Product)** 判断目标位于左侧还是右侧，用于方位分析)*
 3. **遮挡检测**：
 *   向目标发出 **射线(Raycast)**
 *   若射线在触碰目标前先击中了 `Obstacle` 层（墙壁），则判定视线被遮挡，无法看见。
