@@ -68,6 +68,40 @@
 *   **设计理由**：采用**事件驱动 (Event-Driven)** 更新。UI 不需要每帧在 `Update` 中轮询数据，只有当数据真正改变时才被动刷新。这不仅实现了逻辑解耦，也最大化了性能。
 
 ---
+## 3. 智能 AI 与感知系统 (AI Perception & FSM)
+
+<div align="center">
+  <img src = "./gif/demo_ai.gif" width = 600>
+</div>
+
+### 3.1 系统概述 (Overview)
+构建了一个基于 **有限状态机 (FSM)** 的 AI 系统，赋予 NPC 巡逻、追击、攻击的行为模式。
+核心亮点在于实现了 **拟真的视觉感知 (Sensory System)**，AI 拥有扇形视野，且视线会被障碍物遮挡，不再是简单的距离检测。
+
+### 3.2 核心数学与逻辑(Math & Logic)
+
+#### 👁️ 视觉感知 (Vision Sensor)
+AI的“视觉感知”不依赖Update每帧进行检测，通过协程 **每0.2s** 进行一次低频扫描，优化性能。检测逻辑分为三步：
+1. **范围检测**：
+*    使用 `Physics.OverlapSphere` 获取视距范围内所有潜在目标（利用`LayerMask`过滤无关的物体）。
+2. **角度检测**：
+*    使用`Vector3.Angle` 计算 `transform.forward` (面朝方向) 与 `dirToTarget` (目标方向) 的夹角
+*    如果夹角小于`viewAngle/2`，则判定目标在扇形视野范围内。
+3. **遮挡检测**：
+*   向目标发出 **射线(Raycast)**
+*   若射线在触碰目标前先击中了 `Obstacle` 层（墙壁），则判定视线被遮挡，无法看见。
+
+#### 🧠 状态机架构 (FSM Architecture)
+*   **结构设计**：采用 `IState` 接口定义状态行为 (`OnEnter`, `OnUpdate`, `OnExit`)，通过通用的 `StateMachine` 类管理切换。
+*   **性能优化**：
+    *   在 `Awake` 阶段预先实例化所有状态对象（`PatrolState`, `ChaseState`, `AttackState`）。
+    *   运行时仅切换引用，**避免了频繁 `new` 状态对象导致的内存垃圾 (Garbage)**。
+
+
+##
+
+
+---
 
 ## 🛠️ 开发环境
 *   **Engine**: Unity 2021.3 LTS (或你的版本)
