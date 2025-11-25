@@ -82,6 +82,46 @@ public class InventoryManager : MonoBehaviour
         OnInventoryChanged?.Invoke();
     }
 
+    //重载AddItem，用于播放物品飞行动画完成后再刷新UI
+    public void AddItem(ItemData data, int count, bool autoUpdateUI = true)
+    {
+        //检查背包中是否存在该物品
+        //只有可堆叠的物品才需要检查
+        InventorySlot foundSlot = null;
+
+
+        if (data.isStackable)
+        {
+            //遍历List查找
+            foundSlot = backpack.Find(slot => slot.itemData = data);
+        }
+
+        //如果该物品已存在
+        if (foundSlot != null)
+        {
+            //物品已存在且不可堆叠，直接增加数量
+            foundSlot.AddAmount(count);
+            Debug.Log($"[背包] {data.itemName} 数量增加，当前: {foundSlot.amount}");
+        }
+        else
+        {
+            //物品不存在或者不可堆叠，创建一个新的格子
+            InventorySlot newSlot = new InventorySlot(data, count);
+            backpack.Add(newSlot);
+            Debug.Log($"[背包] 获得新物品: {data.itemName} x{count}");
+        }
+
+        // 只有当允许自动更新时，才发广播刷新UI！
+        if(autoUpdateUI)
+        {
+            OnInventoryChanged?.Invoke();
+        }
+        else
+        {
+            Debug.Log("静默添加成功，等待动画播放...");
+        }
+    }
+
     // 仅用于测试，正式上线要删掉
     public ItemData testItem; // 把你做好的 ScriptableObject 拖进这里
 

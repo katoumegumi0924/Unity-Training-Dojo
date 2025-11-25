@@ -17,11 +17,16 @@ public class ItemPickup : MonoBehaviour
             //调用管理器添加物品到背包
             if( InventoryManager.instance != null)
             {
-                InventoryManager.instance.AddItem(itemData, amount);
+                InventoryManager.instance.AddItem(itemData, amount, false);
             }
 
             // 3. 视觉反馈：销毁场景里的这个模型
             // (进阶思考：如果是对象池管理的，这里应该 ReturnToPool，这里先简单Destroy)
+            if( AnimatedInventoryUI.Instance != null)
+            {
+                AnimatedInventoryUI.Instance.PlayFlyAnimation(transform.position, itemData.icon);
+            }
+
             Destroy(gameObject);
 
             Debug.Log($"捡起了 {itemData.itemName} x{amount}");
