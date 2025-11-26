@@ -24,11 +24,14 @@ public class PatrolState : IState
         manager.SetColor(Color.green);
         Debug.Log("进入状态：巡逻 (Patrol)");
         MoveToRandomPos();
+
+        //设置动画参数
+        manager.anim.SetFloat("Speed", 1.0f);
     }
 
     public void OnExit()
     {
-        //throw new System.NotImplementedException();
+        manager.anim.SetFloat("Speed", 0f);
     }
 
     public void OnUpdate()

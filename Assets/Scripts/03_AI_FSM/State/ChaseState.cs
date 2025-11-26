@@ -17,6 +17,8 @@ public class ChaseState : IState
         manager.agent.speed = manager.chaseSpeed;
         //设置追击状态颜色
         manager.SetColor(Color.yellow);
+        //设置动画参数
+        manager.anim.SetFloat("Speed", 3.5f);
         Debug.Log("进入状态：追击 (Chase) !!!");
     }
 
@@ -24,6 +26,8 @@ public class ChaseState : IState
     {
         // 离开时，把速度重置（或者停下来）
         manager.agent.ResetPath();
+
+        manager.anim.SetFloat("Speed", 0f);
     }
 
     public void OnUpdate()

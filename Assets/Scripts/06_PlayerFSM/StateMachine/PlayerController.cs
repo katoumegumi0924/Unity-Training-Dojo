@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     //缓存状态
     public PlayerIdleState playerIdleState;
     public PlayerMoveState playerMoveState;
+    public PlayerAttackState playerAttackState;
 
     private void Awake()
     {
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour
         stateMachine = new StateMachine();
         playerIdleState = new PlayerIdleState(this);
         playerMoveState = new PlayerMoveState(this);
+        playerAttackState = new PlayerAttackState(this);
 
         // 默认设置??
         agent.stoppingDistance = 0.1f;
@@ -77,7 +79,6 @@ public class PlayerController : MonoBehaviour
     //处理点击逻辑
     private void OnClickMap()
     {
-        Debug.Log("OnClickMap ");
         //获取鼠标位置
         Vector2 mouseScreenPos = InputManager.Instance.MousePosition;
 
@@ -87,9 +88,24 @@ public class PlayerController : MonoBehaviour
 
         if(Physics.Raycast(ray, out hitInfo))
         {
-            targetPos = hitInfo.point;
-            //切换到Move状态
-            SwitchState(playerMoveState);
+            // 尝试从撞到的物体上获取 IDamageable 接口
+            IDamageable target = hitInfo.collider.GetComponent<IDamageable>();
+            //点到了敌人
+            if (target != null)
+            {
+                // 如果点到了敌人，直接扣血 (或者你可以写一个 PlayerAttackState 去追着打)
+                Debug.Log("玩家点击了敌人！");
+                //target.TakeDamage(20);
+
+                playerAttackState.SetTarget(hitInfo.transform); // 锁定目标
+                SwitchState(playerAttackState); // 切状态
+            }
+            else
+            {
+                targetPos = hitInfo.point;
+                //切换到Move状态
+                SwitchState(playerMoveState);
+            }
         }
     }
 
@@ -97,6 +113,19 @@ public class PlayerController : MonoBehaviour
     public void SwitchState( IState newState )
     {
         stateMachine.ChangeState( newState );
+    }
+
+    // 专门处理攻击判定的方法
+    public void OnAnimationAttackHit()
+    {
+        Debug.Log("【关键帧触发】刀砍到肉了！开始计算伤害...");
+
+        // 这里写之前的扣血逻辑
+        // 1. 获取当前攻击目标
+        // 2. 计算距离 (防止挥空)
+        // 3. target.TakeDamage(20);
+
+        // 为了测试，先只打印日志
     }
 
 }

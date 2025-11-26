@@ -52,10 +52,10 @@ public class EnemyVision : MonoBehaviour
                 // 虽然对于"是否看见"不重要，但这能帮你判断方位
                 Vector3 crossResult = Vector3.Cross(transform.forward, dirToTarget);
 
-                if (crossResult.y > 0)
-                    Debug.Log("玩家在右侧 👉");
-                else
-                    Debug.Log("玩家在左侧 👈");
+                //if (crossResult.y > 0)
+                //    Debug.Log("玩家在右侧 👉");
+                //else
+                //    Debug.Log("玩家在左侧 👈");
 
                 //与目标的距离
                 float dstToTarget = Vector3.Distance(transform.position, target.position);
@@ -98,7 +98,7 @@ public class EnemyVision : MonoBehaviour
             //    }
             //}
         }
-        Debug.Log("canSeePlayer: " + canSeePlayer);
+        //Debug.Log("canSeePlayer: " + canSeePlayer);
     }
 
     private void Start()

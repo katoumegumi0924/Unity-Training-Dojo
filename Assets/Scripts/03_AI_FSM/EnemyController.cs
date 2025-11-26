@@ -13,6 +13,9 @@ public class EnemyController : MonoBehaviour
     //// 缓存渲染器，为了实现切换状态变色
     private MeshRenderer meshRenderer;
 
+    //动画状态机
+    public Animator anim;
+
     //所有状态共享的数据和组件
     [HideInInspector]
     public NavMeshAgent agent;      //寻路组件
@@ -37,6 +40,9 @@ public class EnemyController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         meshRenderer = GetComponent<MeshRenderer>();
         vision = GetComponent<EnemyVision>();
+
+        anim = GetComponentInChildren<Animator>();
+
         // 假设场景里只有一个 Player (Tag 查找)
         // Player = GameObject.FindGameObjectWithTag("Player").transform;
 
@@ -71,7 +77,7 @@ public class EnemyController : MonoBehaviour
     //切换颜色方法
     public void SetColor(Color color)
     {
-        if (color != null)
+        if (color != null && meshRenderer != null)
         {
             meshRenderer.material.color = color;
         }

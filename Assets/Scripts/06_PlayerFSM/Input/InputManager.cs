@@ -57,7 +57,7 @@ public class InputManager : MonoBehaviour
     void Start()
     {
         // 测试输入
-        InputManager.Instance.OnClick += () => Debug.Log("鼠标点击了！位置：" + InputManager.Instance.MousePosition);
+        //InputManager.Instance.OnClick += () => Debug.Log("鼠标点击了！位置：" + InputManager.Instance.MousePosition);
     }
 
     // Update is called once per frame

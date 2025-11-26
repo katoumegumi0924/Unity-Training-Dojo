@@ -55,13 +55,32 @@ public class AttackState : IState
         attackTimer += Time.deltaTime;
         if( attackTimer >= manager.attackInterval)
         {
-            Attack();
+            //Attack();
+
+            // 切换到攻击动画
+            manager.anim.SetTrigger("Attack");
             attackTimer = 0;
         }
     }
 
     private void Attack()
     {
-        Debug.Log($"[攻击] 造成伤害！时间: {Time.time}");
+        //Debug.Log($"[攻击] 造成伤害！时间: {Time.time}");
+        // 1. 获取玩家身上的接口
+        // 这种写法非常经典：我不需要知道它是 PlayerController 还是 NPC，只要它能受伤就行
+        var targetHealth = GameManager.instance.Player.GetComponent<IDamageable>();
+
+        if (targetHealth != null)
+        {
+            targetHealth.TakeDamage(10); // 扣 10 血
+        }
+    }
+
+    //由关键帧动画事件调用
+    public void AnimationTriggerAttack()
+    {
+        // 真正的扣血逻辑放在这里
+        var target = GameManager.instance.Player.GetComponent<IDamageable>();
+        if (target != null) target.TakeDamage(10);
     }
 }
