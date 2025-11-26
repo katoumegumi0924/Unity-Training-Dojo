@@ -105,12 +105,14 @@ public class AnimatedInventoryUI : MonoBehaviour
             .SetEase(Ease.InBack)
             .OnComplete(() =>
             {
+                //立刻完成bagButto动画并停在终点（复位到原点）,避免短时间捡起多个物体引起抽搐
+                bagButton.DOKill(true);
+
                 Destroy(flyIcon);
 
                 bagButton.DOShakeAnchorPos(0.2f, 10);
 
-                //立刻完成bagButto动画并停在终点（复位到原点）,避免短时间捡起多个物体引起抽搐
-                bagButton.DOKill(true);
+                
                 //动画播放完成之后刷新UI
                 RefreshUI();
             } );
