@@ -11,16 +11,25 @@ using UnityEditor; // 引入编辑器命名空间用于画图
 //敌人视野范围检测
 public class EnemyVision : MonoBehaviour
 {
-    [Header("视野配置")]
-    public float viewRadius = 8f;   //视距，能看多远
-    [Range(0, 360)]
-    public float viewAngle = 90f;   //视野角度(扇形视野张开的角度)
+    //[Header("视野配置")]
+    //public float viewRadius = 8f;   //视距，能看多远
+    //[Range(0, 360)]
+    //public float viewAngle = 90f;   //视野角度(扇形视野张开的角度)
 
     public LayerMask targetMask;    //目标层
     public LayerMask obstacleMask;  //障碍物层
 
+    //引用 Controller 来获取数据
+    private EnemyController controller;
+
     [Header("可视状态")]
     public bool canSeePlayer = false;       //最终结果，能否看见玩家
+
+
+    private void Awake()
+    {
+        controller = GetComponent<EnemyController>();
+    }
 
     // --- 核心功能：检测 ---
     public void CheckSight()
@@ -29,7 +38,7 @@ public class EnemyVision : MonoBehaviour
         canSeePlayer = false;
 
         //范围检测，获取圆形半径内所有的“Target”
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
+        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, controller.stats.detectRange, targetMask);
 
         //遍历范围内所有的“Target”
         for (int i = 0; i < targetsInViewRadius.Length; i++)
@@ -43,7 +52,7 @@ public class EnemyVision : MonoBehaviour
             //计算我们面对的方向和目标方向的“相似度” (Cos值)
             float dotResult = Vector3.Dot(transform.forward, dirToTarget);
             //计算视野门槛 (把角度转成 Cos 值)
-            float angleThreshold = Mathf.Cos( (viewAngle/2) * Mathf.Deg2Rad );
+            float angleThreshold = Mathf.Cos( (controller.stats.viewAngle/2) * Mathf.Deg2Rad );
 
             // 3. 比较 (注意是大于号！因为角度越小，Cos值越大)
             if (dotResult > angleThreshold)
@@ -122,17 +131,22 @@ public class EnemyVision : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        // ⚠️ 注意：Gizmos 在编辑器模式下运行，此时 Awake 可能还没跑，controller 可能是 null
+        // 所以这里临时获取一下，或者判空
+        if (controller == null) controller = GetComponent<EnemyController>();
+        if (controller == null || controller.stats == null) return;
+
         // 1. 画视距圆
         Handles.color = new Color(1, 1, 1, 0.2f);
-        Handles.DrawWireDisc(transform.position, Vector3.up, viewRadius);
+        Handles.DrawWireDisc(transform.position, Vector3.up, controller.stats.detectRange);
 
         // 2. 画扇形的两条边
-        Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
-        Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
+        Vector3 viewAngleA = DirFromAngle(-controller.stats.viewAngle / 2, false);
+        Vector3 viewAngleB = DirFromAngle(controller.stats.viewAngle / 2, false);
 
         Handles.color = new Color(1, 1, 1, 0.5f);
-        Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
-        Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+        Handles.DrawLine(transform.position, transform.position + viewAngleA * controller.stats.detectRange);
+        Handles.DrawLine(transform.position, transform.position + viewAngleB * controller.stats.detectRange);
 
         // 3. 连线提示
         if (canSeePlayer)

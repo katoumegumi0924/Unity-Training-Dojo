@@ -21,13 +21,18 @@ public class EnemyController : MonoBehaviour
     public NavMeshAgent agent;      //寻路组件
     [HideInInspector]
     public EnemyVision vision;      //视线范围检测
-    
+
+    //配置数据
+    //使用ScriptableObject来配置
+    [Header("数据配置")]
+    public CharacterStats stats;
+
     //参数配置
-    public float patrolSpeed = 2.0f;    //巡逻速度
-    public float chaseSpeed = 4.0f;     //追击速度
-    public float detectRange = 5.0f;   //追击检测范围
-    public float attackRange = 0.5f;   //攻击检测范围
-    public float attackInterval = 1f; // 攻击间隔 (秒)
+    //public float patrolSpeed = 2.0f;    //巡逻速度
+    //public float chaseSpeed = 4.0f;     //追击速度
+    //public float detectRange = 5.0f;   //追击检测范围
+    //public float attackRange = 0.5f;   //攻击检测范围
+    //public float attackInterval = 1f; // 攻击间隔 (秒)
 
     // 定义变量来缓存状态
 
@@ -43,15 +48,24 @@ public class EnemyController : MonoBehaviour
 
         anim = GetComponentInChildren<Animator>();
 
-        // 假设场景里只有一个 Player (Tag 查找)
-        // Player = GameObject.FindGameObjectWithTag("Player").transform;
-
         //初始化状态机
         stateMachine = new StateMachine();
-
+        //创建状态缓存
         PatrolState = new PatrolState(this);
         ChaseState = new ChaseState(this);
         AttackState = new AttackState(this);
+
+        //安全检查 确保配置了必要的数据
+        if( stats == null)
+        {
+            Debug.LogError($"{name} 缺少 CharacterStats 数据配置！请在 Inspector 赋值！");
+        }
+        else
+        {
+            //初始化通用属性
+            agent.speed = stats.moveSpeed;
+            agent.angularSpeed = stats.turnSpeed;
+        }
     }
 
     // Start is called before the first frame update
@@ -87,12 +101,14 @@ public class EnemyController : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
+        
+
         // --- 1. 画检测范围 (黄色) ---
         Handles.color = new Color(1, 0.92f, 0.016f, 0.5f); // 黄色
 
         // DrawWireDisc(中心点, 法线方向, 半径)
         // Vector3.up 表示圆环是平躺在地上的 (法线朝上)
-        Handles.DrawWireDisc(transform.position, Vector3.up, detectRange);
+        Handles.DrawWireDisc(transform.position, Vector3.up, stats.detectRange);
 
         // 如果你想看实心的圆盘，可以用 DrawSolidDisc (可选)
         //Handles.color = new Color(1, 0.92f, 0.016f, 0.1f); // 很淡的黄色
@@ -100,14 +116,14 @@ public class EnemyController : MonoBehaviour
 
         // --- 2. 画攻击范围 (红色) ---
         Handles.color = Color.red;
-        Handles.DrawWireDisc(transform.position, Vector3.up, attackRange);
+        Handles.DrawWireDisc(transform.position, Vector3.up, stats.attackRange);
 
         // 可选：画一条线指向玩家，方便看有没有丢失目标
-        if (GameManager.instance.Player != null)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, GameManager.instance.Player.position);
-        }
+        //if (GameManager.instance.Player != null)
+        //{
+        //    Gizmos.color = Color.blue;
+        //    Gizmos.DrawLine(transform.position, GameManager.instance.Player.position);
+        //}
     }
 #endif
 

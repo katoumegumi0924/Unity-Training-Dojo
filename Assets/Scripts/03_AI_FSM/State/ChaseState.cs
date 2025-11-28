@@ -11,10 +11,14 @@ public class ChaseState : IState
         this.manager = manager;
     }
 
+    // --- 优化变量 ---
+    private float repathTimer = 0f;
+    private float repathInterval = 0.2f; // 每 0.2 秒重新算一次路
+
     public void OnEnter()
     {
         //设置追击速度
-        manager.agent.speed = manager.chaseSpeed;
+        manager.agent.speed = manager.stats.chaseSpeed;
         //设置追击状态颜色
         manager.SetColor(Color.yellow);
         //设置动画参数
@@ -25,48 +29,38 @@ public class ChaseState : IState
     public void OnExit()
     {
         // 离开时，把速度重置（或者停下来）
-        manager.agent.ResetPath();
+        manager.agent.velocity = Vector3.zero;
+        //manager.agent.ResetPath();
 
         manager.anim.SetFloat("Speed", 0f);
     }
 
     public void OnUpdate()
     {
-        ////检测玩家位置
-        //float dis = Vector3.Distance(manager.transform.position, manager.Player.position);
-
-        ////在追击范围内 继续追击逻辑
-        //if( dis < manager.detectRange)
-        //{
-        //    manager.agent.SetDestination(manager.Player.position);
-        //}
-        ////玩家离开追击范围
-        //else
-        //{
-        //    //切换回巡逻状态
-        //    manager.TranstionToState(new PatrolState(manager));
-        //}
-
         // --- 1. 追击逻辑 ---
-        // 每帧都把目标设为玩家的位置
-        manager.agent.SetDestination(GameManager.instance.Player.position);
+        // 每0.2s把目标设为玩家的位置，限制agent.SetDestination的频率，优化性能
+        repathTimer += Time.deltaTime;
+        if(repathTimer > repathInterval)
+        {
+            manager.agent.SetDestination(GameManager.instance.Player.position);
+            repathTimer = 0f;
+        }
+        
 
         //检测玩家位置
         float dist = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
 
-        //玩家位置超过检测距离 切换到巡逻状态
-        //if (dist > manager.detectRange * 1.5) // 乘以1.5是为了防止在边界反复横跳（防抖）
-        //{
-        //    manager.TransitionToState(manager.PatrolState);
-        //}
+        //如果看不见玩家了 切换到巡逻状态
         if( !manager.vision.canSeePlayer)
         {
             manager.TransitionToState(manager.PatrolState);
+            return;
         }
         //玩家位置进入攻击范围 切换到攻击状态
-        else if( dist < manager.attackRange )
+        if( dist < manager.stats.attackRange )
         {
             manager.TransitionToState(manager.AttackState);
+            return;
         }
     }
 }

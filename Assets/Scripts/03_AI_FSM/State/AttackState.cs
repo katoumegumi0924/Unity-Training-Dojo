@@ -24,7 +24,7 @@ public class AttackState : IState
 
         // 进入时重置计时器，让它能“立刻”或者“稍微等一下”再攻击
         // 这里设为 attackInterval，让它进状态后立刻能打第一下
-        attackTimer = manager.attackInterval;
+        attackTimer = manager.stats.attackInterval;
     }
 
     public void OnExit()
@@ -44,16 +44,14 @@ public class AttackState : IState
         //距离检测
         float dis = Vector3.Distance(manager.transform.position, GameManager.instance.Player.position);
         //距离超过了攻击距离，切换到追击状态
-        // 只有当距离 大于 (攻击距离 + 缓冲距离) 时才追
-        // 比如攻击距离是 2，那跑到 2.5 米开外才开始追
-        if (dis > manager.attackRange + 0.1f)
+        if (dis > manager.stats.chaseResumeDistance)
         {
             manager.TransitionToState(manager.ChaseState);
         }
 
-        //攻击逻辑 先打印信息代替
+        //攻击逻辑
         attackTimer += Time.deltaTime;
-        if( attackTimer >= manager.attackInterval)
+        if( attackTimer >= manager.stats.attackInterval)
         {
             //Attack();
 

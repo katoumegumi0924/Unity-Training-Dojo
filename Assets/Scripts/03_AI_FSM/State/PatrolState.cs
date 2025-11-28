@@ -19,7 +19,7 @@ public class PatrolState : IState
     public void OnEnter()
     {
         //设置巡逻速度
-        manager.agent.speed = manager.patrolSpeed;
+        manager.agent.speed = manager.stats.moveSpeed;
         //设置训练状态颜色
         manager.SetColor(Color.green);
         Debug.Log("进入状态：巡逻 (Patrol)");
