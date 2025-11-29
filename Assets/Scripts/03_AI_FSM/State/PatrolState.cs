@@ -26,12 +26,16 @@ public class PatrolState : IState
         MoveToRandomPos();
 
         //设置动画参数
-        manager.anim.SetFloat("Speed", 1.0f);
+        //manager.anim.SetFloat("Speed", 1.0f);
+        //通过动画包装类来设置动画参数
+        manager.animView.SetMoveSpeed(manager.stats.moveSpeed);
     }
 
     public void OnExit()
     {
-        manager.anim.SetFloat("Speed", 0f);
+        //停止播放移动动画
+        //manager.anim.SetFloat("Speed", 0f);
+        manager.animView.SetMoveSpeed(0);
     }
 
     public void OnUpdate()

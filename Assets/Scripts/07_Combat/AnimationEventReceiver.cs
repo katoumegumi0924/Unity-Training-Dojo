@@ -8,12 +8,18 @@ public class AnimationEventReceiver : MonoBehaviour
     private PlayerController playerCtrl;
     private EnemyController enemyCtrl;
 
+    //溶解特效
+    private EnemyDissolve enemyDissolve;
+
     // Start is called before the first frame update
     void Start()
     {
         //尝试获取父物体上的控制器对象
         playerCtrl = GetComponentInParent<PlayerController>();
         enemyCtrl = GetComponentInParent<EnemyController>();
+
+        // 获取溶解脚本
+        enemyDissolve = GetComponentInParent<EnemyDissolve>();
     }
 
     //要绑定的事件方法 ??
@@ -29,7 +35,15 @@ public class AnimationEventReceiver : MonoBehaviour
         // 如果是敌人，通知敌人
         if (enemyCtrl != null)
         {
-            Debug.Log("Attack");
+            Debug.Log("敌人攻击Attack");
+        }
+    }
+
+    public void OnDeathAnimationEnd()
+    {
+        if( enemyDissolve != null)
+        {
+            enemyDissolve.StartDissoloveEffect();
         }
     }
 }

@@ -22,7 +22,9 @@ public class ChaseState : IState
         //设置追击状态颜色
         manager.SetColor(Color.yellow);
         //设置动画参数
-        manager.anim.SetFloat("Speed", 3.5f);
+        //manager.anim.SetFloat("Speed", 3.5f);
+        //通过动画包装类来设置动画参数
+        manager.animView.SetMoveSpeed(manager.stats.chaseSpeed);
         Debug.Log("进入状态：追击 (Chase) !!!");
     }
 
@@ -32,7 +34,8 @@ public class ChaseState : IState
         manager.agent.velocity = Vector3.zero;
         //manager.agent.ResetPath();
 
-        manager.anim.SetFloat("Speed", 0f);
+        // manager.anim.SetFloat("Speed", 0f);
+        manager.animView.SetMoveSpeed(0);
     }
 
     public void OnUpdate()

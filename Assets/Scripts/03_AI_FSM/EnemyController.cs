@@ -14,7 +14,12 @@ public class EnemyController : MonoBehaviour
     private MeshRenderer meshRenderer;
 
     //动画状态机
-    public Animator anim;
+    //public Animator anim;
+    //动画包装器
+    public CharacterAnimation animView;
+
+    //血量组件
+    public HealthController health;
 
     //所有状态共享的数据和组件
     [HideInInspector]
@@ -39,14 +44,19 @@ public class EnemyController : MonoBehaviour
     public PatrolState PatrolState { get; private set; }
     public ChaseState ChaseState { get; private set; }
     public AttackState AttackState { get; private set; }
+    public HurtState HurtState { get; private set; }
+    public DeadState DeadState { get; private set; }
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         meshRenderer = GetComponent<MeshRenderer>();
         vision = GetComponent<EnemyVision>();
+        health = GetComponent<HealthController>();
 
-        anim = GetComponentInChildren<Animator>();
+        //anim = GetComponentInChildren<Animator>();
+        //获取动画包装器
+        animView = GetComponent<CharacterAnimation>();
 
         //初始化状态机
         stateMachine = new StateMachine();
@@ -54,6 +64,8 @@ public class EnemyController : MonoBehaviour
         PatrolState = new PatrolState(this);
         ChaseState = new ChaseState(this);
         AttackState = new AttackState(this);
+        HurtState = new HurtState(this);
+        DeadState = new DeadState(this);
 
         //安全检查 确保配置了必要的数据
         if( stats == null)
@@ -71,6 +83,13 @@ public class EnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // 监听受伤和死亡
+        if (health != null)
+        {
+            health.OnTakeDamage += HandleTakeDamage;
+            health.OnDeath += HandleDeath;
+        }
+
         // 启动！先进入巡逻状态
         stateMachine.Initialize(PatrolState);
     }
@@ -95,6 +114,23 @@ public class EnemyController : MonoBehaviour
         {
             meshRenderer.material.color = color;
         }
+    }
+
+    //事件回调函数
+    void HandleTakeDamage()
+    {
+        // 如果当前已经是死亡状态，或者是血量归零了，就绝对不允许切回受击状态
+        if (stateMachine.CurrentState == DeadState) return;
+        if (health.currentHealth <= 0) return;
+
+        // 只有活着的时候，才允许切受击
+        TransitionToState(HurtState);
+        
+    }
+
+    void HandleDeath()
+    {
+        stateMachine.ChangeState(DeadState);
     }
 
     // 这里的 #if 意思是：只有在 Unity 编辑器模式下，才编译这段代码

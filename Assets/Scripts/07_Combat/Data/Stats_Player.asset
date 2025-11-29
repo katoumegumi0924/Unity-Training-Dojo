@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Stats_Player
   m_EditorClassIdentifier: 
   maxHealth: 100
-  moveSpeed: 5
+  moveSpeed: 8
   turnSpeed: 360
   attackRange: 2
-  attackInterval: 1
-  damage: 10
+  attackInterval: 0.5
+  damage: 20
+  viewAngle: 90
   detectRange: 5
   chaseStopDistance: 2
   chaseResumeDistance: 3
+  chaseSpeed: 5

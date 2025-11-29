@@ -56,7 +56,8 @@ public class AttackState : IState
             //Attack();
 
             // ÇÐ»»µ½¹¥»÷¶¯»­
-            manager.anim.SetTrigger("Attack");
+            //manager.anim.SetTrigger("Attack");
+            manager.animView.TriggerAttack();
             attackTimer = 0;
         }
     }

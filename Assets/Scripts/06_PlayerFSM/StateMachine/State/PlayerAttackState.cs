@@ -64,14 +64,16 @@ public class PlayerAttackState : IState
             player.agent.SetDestination(targetEnemy.position);
 
             // 播放跑动画
-            player.anim.SetFloat("Speed", player.agent.velocity.magnitude, 0.1f, Time.deltaTime);
+            //player.anim.SetFloat("Speed", player.agent.velocity.magnitude, 0.1f, Time.deltaTime);
+            player.playerAnim.SetMoveSpeed(player.agent.velocity.magnitude);
         }
         //攻击
         else
         {
             //先停止移动
             player.agent.isStopped = true ;
-            player.anim.SetFloat("Speed", 0f);
+            //player.anim.SetFloat("Speed", 0f);
+            player.playerAnim.SetMoveSpeed(0);
 
             //面向敌人
             // 简单 LookAt 可能会导致仰头，这里只转 Y 轴
@@ -82,9 +84,19 @@ public class PlayerAttackState : IState
             //攻击逻辑
             if ( attackTimer > attackInterval )
             {
-                player.anim.SetTrigger("Attack");
+                //player.anim.SetTrigger("Attack");
+                player.playerAnim.TriggerAttack();
                 attackTimer = 0; // 归零
+
+                var targetHealth = targetEnemy.GetComponent<HealthController>();
+                if (targetHealth != null)
+                {
+                    targetHealth.TakeDamage(20);
+                    Debug.Log("攻击扣血：-10");
+                }
             }
+
+            
         }
     }
 

@@ -6,7 +6,8 @@ using UnityEngine.AI;
 public class PlayerController : MonoBehaviour
 {
     //相关组件
-    public Animator anim {  get; private set; }
+    //public Animator anim {  get; private set; }
+    public CharacterAnimation playerAnim;
     public NavMeshAgent agent { get; private set; }
     public LineRenderer line { get; private set; }
 
@@ -20,11 +21,14 @@ public class PlayerController : MonoBehaviour
     public PlayerMoveState playerMoveState;
     public PlayerAttackState playerAttackState;
 
+    [Header("输入配置")]
+    public LayerMask clickableLayers;
+
     private void Awake()
     {
         //初始化 获取组件
         // 因为模型通常是 Player 的子物体，所以用 GetComponentInChildren
-        anim = GetComponentInChildren<Animator>();
+        playerAnim = GetComponentInChildren<CharacterAnimation>();
         agent = GetComponent<NavMeshAgent>();
         line = GetComponent<LineRenderer>();
 
@@ -86,7 +90,7 @@ public class PlayerController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(mouseScreenPos);
         RaycastHit hitInfo;
 
-        if(Physics.Raycast(ray, out hitInfo))
+        if(Physics.Raycast(ray, out hitInfo, 1000, clickableLayers))
         {
             // 尝试从撞到的物体上获取 IDamageable 接口
             IDamageable target = hitInfo.collider.GetComponent<IDamageable>();

@@ -11,7 +11,7 @@ public class HealthController : MonoBehaviour,IDamageable
     public int currentHealth {  get; private set; }
 
     //死亡标志
-    public bool isDead => currentHealth < 0;
+    public bool isDead => currentHealth <= 0;
 
     //事件系统,方便 UI 和 动画 监听
     public event Action OnTakeDamage;
@@ -42,7 +42,7 @@ public class HealthController : MonoBehaviour,IDamageable
         OnDeath?.Invoke();
 
         // 暂时先简单销毁，后面我们会做更酷的溶解特效
-        // Destroy(gameObject, 2f); // 延迟2秒销毁，留时间播动画
+        //Destroy(gameObject, 1f); // 延迟2秒销毁，留时间播动画
     }
 
     public void TakeDamage(int damage)

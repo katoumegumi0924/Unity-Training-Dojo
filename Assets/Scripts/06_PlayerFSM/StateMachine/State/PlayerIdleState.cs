@@ -18,7 +18,8 @@ public class PlayerIdleState : IState
         //停止移动动画
         if ( player != null)
         {
-            player.anim.SetFloat("Speed", 0f);
+            //player.anim.SetFloat("Speed", 0f);
+            player.playerAnim.SetMoveSpeed(0);
         }
 
         // 这是一个好习惯：切回待机时重置路径，防止意外滑动

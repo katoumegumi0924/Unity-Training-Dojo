@@ -30,9 +30,10 @@ public class PlayerMoveState : IState
     public void OnUpdate()
     {
         //播放移动动画
-        if (player.anim != null)
+        if (player.playerAnim != null)
         {
-            player.anim.SetFloat("Speed", player.agent.velocity.magnitude, 0.1f, Time.deltaTime);
+            //player.anim.SetFloat("Speed", player.agent.velocity.magnitude, 0.1f, Time.deltaTime);
+            player.playerAnim.SetMoveSpeed(player.agent.velocity.magnitude);
         }
 
         // 核心修改 2：标准的 NavMesh 到达检测逻辑
