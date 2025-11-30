@@ -148,6 +148,57 @@ flyIcon.transform
         bagButton.DOShakeAnchorPos(0.2f, 10); // 按钮震动反馈
         RefreshUI();               // 手动刷新数据
     });
+```
+
+### 5. 重构核心架构
+
+### 5.1 输入系统重构(New Input System)
+使用Unity **New Input System** 代替旧版的`Input.GetMouseButton`的轮询模式
+* **设计模式**：采用**事件驱动 (Event-Driven)**。
+* **实现**：封装`InputManager`单例，将底层的`InputAction`映射为C#事件（`OnClick`）和属性（`MousePosition`）,供上层逻辑调用。
+
+### 5.2 玩家控制 FSM 化 (Player State Machine)
+将 `PlayerController` 重构为与 AI 同构的 **有限状态机 (FSM)**，实现了逻辑解耦与状态复用。
+
+*   **PlayerController (核心中枢)**：
+    *   **职责**：作为“黑板”持有组件引用，并负责**输入事件的分发**。
+    *   **逻辑**：订阅 `InputManager.OnClick` 事件，执行射线检测。根据点击目标（地面 vs 敌人），**动态决策**是切换到移动状态还是攻击状态。
+*   **IdleState (待机)**：
+    *   **职责**：负责状态重置。进入时清空路径并停止动画，保持静止以等待指令。
+*   **MoveState (移动)**：
+    *   **职责**：驱动 `NavMeshAgent` 执行寻路，同步 BlendTree 动画参数。
+    *   **特性**：实现了到达检测逻辑，并实时调用 `LineRenderer` 绘制路径轨迹。
+*   **AttackState (攻击)**：
+    *   **职责**：负责战斗定位（LookAt 锁定目标）与攻击冷却计时，触发攻击动画。
+
+### 5.3 数据驱动设计(Data-Driven Gameplay)
+引入`ScriptableObject`作为数据配置中心，实现**数据与逻辑分离**。
+*   **CharacterStats**：定义了 HP、移动速度、攻击间隔、侦查范围等属性。
+*   **应用**：Player 和 Enemy 均持有 Stats 引用。可在编辑器中直接调整数值，无需修改代码，实现了“热插拔”式的数值调整。
+
+---
+### 视觉效果升级
+
+<div align="center">
+  <!-- 请确保你的 Docs 文件夹里有这张 GIF，名字要对应 -->
+  <img src="./gif/demo_dissolve.gif" width="600" />
+</div>
+
+### 6.1 渲染管线升级 (URP Upgrade)
+项目升级至 **Universal Render Pipeline (URP)**，以支持 Shader Graph 开发与高性能后处理。
+### 6.2 敌人死亡溶解特效 (Dissolve Shader)
+使用 **Shader Graph** 制作了基于噪声的动态溶解效果。
+
+#### 🧪 核心算法原理
+利用 **佩林噪声 (Perlin Noise)** 的连续性特征，通过两次二值化提取“等高线”作为燃烧边缘。
+1.  **地形模拟**：将噪声图视为高度图 (0=谷底, 1=山峰)。
+2.  **边缘计算**：利用 `Step(Noise, Amount)` - `Step(Noise, Amount + 0.05)` 的减法运算，精准提取出宽度为 0.05 的**数值过渡带**。
+3.  **色彩叠加**：将提取出的边缘乘以 **HDR 高亮颜色**，配合 Bloom 产生燃烧余烬的视觉效果。
+
+### 6.3 镜头跟随 (Cinemachine)
+引入 **Cinemachine** 替代原生相机。
+*   **模式**：使用 `Framing Transposer` 实现 RTS/MOBA 风格的上帝视角。
+*   **特性**：配置 **Dead Zone (死区)** 与 **Damping (阻尼)**，过滤掉玩家微操作带来的画面抖动，实现平滑镜头跟随。
 
 ## 🛠️ 开发环境
 *   **Engine**: Unity 2021.3 LTS (或你的版本)

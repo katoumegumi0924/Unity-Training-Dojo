@@ -60,7 +60,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.9926954
+      - time: 1
         functionName: OnDeathAnimationEnd
         data: 
         objectReferenceParameter: {instanceID: 0}
