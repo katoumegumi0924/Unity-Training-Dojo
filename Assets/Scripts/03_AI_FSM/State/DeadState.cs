@@ -16,8 +16,12 @@ public class DeadState : IState
         Debug.Log("½øÈë×´Ì¬£ºËÀÍö (Dead)");
 
         //Í£Ö¹ÒÆ¶¯
-        manager.agent.isStopped = true;
-        manager.agent.enabled = false;
+        if( manager.agent == null)
+        {
+            manager.agent.isStopped = true;
+            manager.agent.enabled = false;
+        }
+        
 
         //²¥·ÅËÀÍö¶¯»­
         manager.animView.SetBoolDie(true);

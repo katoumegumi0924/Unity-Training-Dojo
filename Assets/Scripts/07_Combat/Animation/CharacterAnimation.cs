@@ -37,6 +37,11 @@ public class CharacterAnimation : MonoBehaviour
         anim.SetTrigger(HurtHash);
     }
 
+    public void TriggleSkill(string skillName)
+    {
+        anim.SetTrigger( skillName );
+    }
+
     public void SetBoolDie( bool isDead )
     {
         anim.SetBool(DieHash, isDead);

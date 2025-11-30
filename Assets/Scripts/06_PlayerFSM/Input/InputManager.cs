@@ -11,8 +11,11 @@ public class InputManager : MonoBehaviour
     // 引用 Unity 自动生成的那个 C# 类
     private GameControls gameControls;
 
-    //对外提供的接口，点击事件
+    //对外提供的接口，鼠标点击事件
     public event Action OnClick;
+    //技能1，绑定Q键
+    public event Action OnSkill1;
+
 
     //鼠标位置
     public Vector2 MousePosition => gameControls.Gameplay.MousePosition.ReadValue<Vector2>();
@@ -32,6 +35,8 @@ public class InputManager : MonoBehaviour
             // 当 'Click' 动作发生时(performed)，触发我们的 OnClick 事件
             // ctx 是 context (上下文)，这里我们不需要它，所以忽略
             gameControls.Gameplay.Click.performed += ctx => OnClick?.Invoke();
+            gameControls.Gameplay.Skill1.performed += ctx => OnSkill1?.Invoke();
+
         }
         else
         {

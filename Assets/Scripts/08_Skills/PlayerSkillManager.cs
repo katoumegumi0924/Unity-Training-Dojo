@@ -1,0 +1,141 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+//当个技能栏位
+[System.Serializable]
+public class SkillSlot
+{
+    public SkillData data;          //技能静态数据
+    public float currentCooldown;   //当前冷却时间
+
+    //辅助属性 技能是否冷却
+    public bool IsReady => currentCooldown <= 0;
+
+    public void Tick( float deltaTime )
+    {
+        if( currentCooldown > 0)
+        {
+            currentCooldown -= deltaTime;
+        }
+    }
+
+    public void StartCooldown()
+    {
+        if( data  != null)
+        {
+            currentCooldown = data.cooldown;
+        }
+    }
+}
+
+public class PlayerSkillManager : MonoBehaviour
+{
+    [Header("配置技能组")]
+    public List<SkillSlot> skillSlots = new List<SkillSlot>();        
+
+    //玩家引用，需要获取技能发起的目标
+    private PlayerController player;
+
+    //动画包装器类
+    private CharacterAnimation view;
+
+    private void Awake()
+    {
+        player = GetComponent<PlayerController>();
+        view = GetComponent<CharacterAnimation>();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        if( InputManager.Instance != null)
+        {
+            //InputManager.Instance.OnSkill1 += UseSkill;
+            InputManager.Instance.OnSkill1 += () => CastSkill(0);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (InputManager.Instance != null)
+        {
+            //InputManager.Instance.OnSkill1 -= UseSkill;
+            InputManager.Instance.OnSkill1 += () => CastSkill(0);
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //冷却时间倒计时
+        foreach( var slot in skillSlots )
+        {
+            slot.Tick( Time.deltaTime );
+        }
+    }
+
+    //核心方法，根据技能的索引施放具体技能
+    private void CastSkill( int index )
+    {
+        //安全检查
+        if( index < 0 || index >= skillSlots.Count ) return;
+
+        //拿出具体的技能
+        var slot = skillSlots[index];
+        if( slot == null )  return;         //空槽位
+
+        //冷却时间检查
+        if( !slot.IsReady )
+        {
+            Debug.Log("技能冷却中");
+            return;
+        }
+
+        //目标选择
+        //Transform target = FindObjectOfType<EnemyController>()?.transform;
+        Transform target = GetTargetUnderMouse();
+        if( target == null )
+        {
+            Debug.Log("需要选择一个目标！");
+            return;
+        }
+
+        //播放对应动画
+        if( !string.IsNullOrEmpty(slot.data.animTriggerName))
+        {
+            view.TriggleSkill(slot.data.animTriggerName);
+        }
+
+        // 4. 执行策略 (插卡带！)
+        // 这里的 strategy 就是你配置的 DirectDamageStrategy
+        slot.data.strategy.Cast(this.transform, target);
+
+        // 5. 进入冷却
+        slot.StartCooldown();
+
+        Debug.Log($"使用了技能: {slot.data.skillName}");
+    }
+
+    //获取鼠标指向的敌人，作为技能的攻击目标
+    private Transform GetTargetUnderMouse()
+    {
+        //获取鼠标射线
+        Ray ray = Camera.main.ScreenPointToRay( Input.mousePosition );
+        RaycastHit hitInfo;
+
+        //射线检测
+        //获取Enemy所在的LayerMask
+        int enemyLyaer = LayerMask.GetMask("Enemy");
+
+        if(Physics.Raycast(ray, out hitInfo, 100f,enemyLyaer))
+        {
+            Debug.Log("测试Raycast");
+            return hitInfo.transform;
+        }
+
+        //没有点击到敌人
+        return null;
+    }
+}

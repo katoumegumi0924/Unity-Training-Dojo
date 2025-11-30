@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cfcf4a1520b93a45a878afc16de71ee, type: 3}
+  m_Name: Skill__Smite
+  m_EditorClassIdentifier: 
+  skillName: 
+  icon: {fileID: 0}
+  description: 
+  coolDown: 2
+  manaCost: 10
+  strategy: {fileID: 11400000, guid: 8f0715ae0a85b504e9d6c6622244551c, type: 2}

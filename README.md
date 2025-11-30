@@ -177,7 +177,7 @@ flyIcon.transform
 *   **应用**：Player 和 Enemy 均持有 Stats 引用。可在编辑器中直接调整数值，无需修改代码，实现了“热插拔”式的数值调整。
 
 ---
-### 视觉效果升级
+### 6. 视觉效果升级
 
 <div align="center">
   <!-- 请确保你的 Docs 文件夹里有这张 GIF，名字要对应 -->
