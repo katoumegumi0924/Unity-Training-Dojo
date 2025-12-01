@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 这是一个具体的“卡带”
+// 这是一个具体的“卡带”，是一个具体的技能
 [CreateAssetMenu(fileName = "DirectDamage", menuName = "Skills/Strategies/Direct Damage")]
 public class DirectDamageStrategy : SkillStrategy
 {

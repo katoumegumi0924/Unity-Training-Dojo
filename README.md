@@ -200,6 +200,50 @@ flyIcon.transform
 *   **模式**：使用 `Framing Transposer` 实现 RTS/MOBA 风格的上帝视角。
 *   **特性**：配置 **Dead Zone (死区)** 与 **Damping (阻尼)**，过滤掉玩家微操作带来的画面抖动，实现平滑镜头跟随。
 
+## 7. 可扩展技能系统 (Scalable Skill System)
+<div align="center">
+  <img src="./gif/demo_skill.gif" width="600" />
+</div>
+
+## 7.1 系统概述（Overview）
+基于 **策略模式（Strategy Pattern）** 构建了一套可高度扩展的技能架构。
+系统支持**数据驱动**的技能配置（冷却、图标、前摇），并实现**逻辑与表现的严格同步。
+
+## 7.2 核心架构设计（Design Patterns）
+
+### 策略模式 (The Strategy Pattern)
+为了遵循 **开闭原则 (OCP)**，将技能的具体行为封装为独立的策略类。
+* **抽象基类** ：`SkillStrategy`(继承自 ScriptableObject)。
+* **具体策略**：
+    *   `DirectDamageStrategy`：锁定目标，直接造成伤害。
+    *   *(扩展预留)* `ProjectileStrategy`：发射物理投射物。
+    *   *(扩展预留)* `AOEStrategy`：范围爆炸伤害。
+*   **优势**：新增技能只需编写新的策略脚本并创建资产，无需修改 `PlayerSkillManager` 的核心代码。
+
+### 数据结构
+#### 💾 数据结构 (Data Structure)
+*   **`SkillData` (配置)**：存储静态数据（图标、CD时间、动作类型、策略引用）。
+*   **`SkillSlot` (运行时)**：包装 `SkillData`，负责维护当前的 **冷却倒计时 (Cooldown)**。
+*   **`PlayerSkillManager` (管理器)**：维护 `List<SkillSlot>`，监听输入并执行技能释放流程。
+#### ⚙️ PlayerSkillManager (系统中枢)
+*   **作用**：挂载于玩家身上的核心组件，作为 **Controller** 角色协调各模块工作。
+*   **核心职责**：
+    1.  **输入响应 (Input Handling)**：订阅 `InputManager` 事件（如按 Q 键），将硬件输入转化为游戏指令。
+    2.  **冷却管理 (Cooldown System)**：在 `Update` 中驱动所有 `SkillSlot` 的冷却倒计时，确保技能循环的合法性。
+    3.  **流程协调 (Orchestration)**：
+        *   **前置检查**：判断冷却状态、搜索并锁定目标。
+        *   **状态接管**：调用 `PlayerController.SwitchState` 进入施法状态。
+        *   **后置处理**：技能释放成功后重置冷却。
+
+### 7.3 战斗手感优化 (Combat Polish)
+为了解决动作游戏中常见的滑步与不同步问题，引入了专门的 **施法状态 (CastState)**。
+
+*   **状态锁定**：进入 `CastState` 时强制 `agent.ResetPath()` 并锁定输入，防止施法滑步。
+*   **动画同步**：利用 `SkillData` 中的 `castDelay` 参数配合协程，精确控制伤害/特效触发时机，使其与动画挥砍的关键帧对齐。
+
+
+
+
 ## 🛠️ 开发环境
 *   **Engine**: Unity 2021.3 LTS (或你的版本)
 *   **Language**: C#
