@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public PlayerIdleState playerIdleState;
     public PlayerMoveState playerMoveState;
     public PlayerAttackState playerAttackState;
+    public PlayerCastState playerCastState;
 
     [Header("输入配置")]
     public LayerMask clickableLayers;
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
         playerIdleState = new PlayerIdleState(this);
         playerMoveState = new PlayerMoveState(this);
         playerAttackState = new PlayerAttackState(this);
+        playerCastState = new PlayerCastState(this);
 
         // 默认设置??
         agent.stoppingDistance = 0.1f;
@@ -83,6 +85,12 @@ public class PlayerController : MonoBehaviour
     //处理点击逻辑
     private void OnClickMap()
     {
+        //施法状态禁止移动打断
+        if( stateMachine.CurrentState == playerCastState)
+        {
+            return;
+        }
+
         //获取鼠标位置
         Vector2 mouseScreenPos = InputManager.Instance.MousePosition;
 

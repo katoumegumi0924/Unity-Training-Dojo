@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-//当个技能栏位
+//单个技能栏位
 [System.Serializable]
 public class SkillSlot
 {
@@ -13,6 +13,7 @@ public class SkillSlot
     //辅助属性 技能是否冷却
     public bool IsReady => currentCooldown <= 0;
 
+    //计算技能当前冷却时间
     public void Tick( float deltaTime )
     {
         if( currentCooldown > 0)
@@ -21,6 +22,7 @@ public class SkillSlot
         }
     }
 
+    //技能进入冷却时间
     public void StartCooldown()
     {
         if( data  != null)
@@ -93,24 +95,36 @@ public class PlayerSkillManager : MonoBehaviour
             return;
         }
 
+        
         //目标选择
         //Transform target = FindObjectOfType<EnemyController>()?.transform;
         Transform target = GetTargetUnderMouse();
-        if( target == null )
+        if (target == null)
         {
             Debug.Log("需要选择一个目标！");
             return;
         }
 
-        //播放对应动画
-        if( !string.IsNullOrEmpty(slot.data.animTriggerName))
-        {
-            view.TriggleSkill(slot.data.animTriggerName);
-        }
+        //直接调用的释放技能方式
+        ////播放对应动画
+        //if( !string.IsNullOrEmpty(slot.data.animTriggerName))
+        //{
+        //    view.TriggleSkill(slot.data.animTriggerName);
+        //}
 
-        // 4. 执行策略 (插卡带！)
-        // 这里的 strategy 就是你配置的 DirectDamageStrategy
-        slot.data.strategy.Cast(this.transform, target);
+        //// 4. 执行策略 (插卡带！)
+        //// 这里的 strategy 就是你配置的 DirectDamageStrategy
+        //slot.data.strategy.Cast(this.transform, target);
+
+        //通过施法状态来释放技能
+        var castState = player.playerCastState;
+        //传递参数
+        castState.SetSkill(slot, target);
+
+        //切换状态
+        player.SwitchState(castState);
+
+
 
         // 5. 进入冷却
         slot.StartCooldown();
@@ -131,7 +145,6 @@ public class PlayerSkillManager : MonoBehaviour
 
         if(Physics.Raycast(ray, out hitInfo, 100f,enemyLyaer))
         {
-            Debug.Log("测试Raycast");
             return hitInfo.transform;
         }
 

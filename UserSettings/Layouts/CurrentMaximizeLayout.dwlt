@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: AnimatorControllerTool
+  m_Name: SceneView
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -164,15 +164,15 @@ MonoBehaviour:
     y: 0
     width: 968
     height: 518.4
-  m_MinSize: {x: 101, y: 121}
+  m_MinSize: {x: 201, y: 221}
   m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 6}
+  m_ActualView: {fileID: 5}
   m_Panes:
   - {fileID: 5}
   - {fileID: 6}
   - {fileID: 7}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -434,7 +434,7 @@ MonoBehaviour:
       layout: 4
     m_OverlaysVisible: 1
   m_WindowGUID: 176533cfd066af04daa454341e848569
-  m_Gizmos: 0
+  m_Gizmos: 1
   m_OverrideSceneCullingMask: 6917529027641081856
   m_SceneIsLit: 1
   m_SceneLighting: 1
@@ -443,9 +443,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0, y: 0.25, z: 0.845}
+    m_Target: {x: 0.1478401, y: 0.9953488, z: 1.9955082}
     speed: 2
-    m_Value: {x: 0, y: 0.25, z: 0.845}
+    m_Value: {x: 0.1478401, y: 0.9953488, z: 1.9955082}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -492,13 +492,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.31576592, y: -0.5746941, z: 0.25542825, w: 0.7105342}
+    m_Target: {x: 0.2522006, y: -0.64044666, z: 0.2354019, w: 0.6862344}
     speed: 2
-    m_Value: {x: 0.31575266, y: -0.57466996, z: 0.25541753, w: 0.7105044}
+    m_Value: {x: -0.2522006, y: 0.64044666, z: -0.2354019, w: -0.6862344}
   m_Size:
-    m_Target: 5.553069
+    m_Target: 1.854309
     speed: 2
-    m_Value: 5.553069
+    m_Value: 1.854309
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1417,7 +1417,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 200}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 33585
+  controlID: 55683
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1437,8 +1437,8 @@ MonoBehaviour:
     y: 0
     width: 328.80005
     height: 673.6
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 11}
   m_Panes:
   - {fileID: 11}
@@ -1476,9 +1476,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 948d0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 76d3fbffa8d8fbffa6fdfbffaa1efcff6683fcff9885fcff8489fcff8a98fcffbe25feff5e3bfeff76f9ffff88e80000be0e01000e0f0100
+      m_ExpandedIDs: 62c8f8ff7ec8f8ff82c8f8ff86c8f8ff8ec8f8ffd6c8f8ffdac8f8ffdec8f8ffe2c8f8ffe6c8f8ff7acaf8fff4e2f8ff4ae5f8ff28f1f8ff3ad3fbff3ed3fbff76d3fbffa8d8fbffa6fdfbffaa1efcff6683fcff9885fcff8489fcff8a98fcffbe25feff5e3bfeff76f9ffff88e80000be0e01000e0f01002a0f01003c0f0100948b0100469001006a900100
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1521,8 +1521,8 @@ MonoBehaviour:
     y: 673.6
     width: 328.80005
     height: 337.20007
-  m_MinSize: {x: 102, y: 121}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -1623,7 +1623,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/08_Skills/SkillData
+    - Assets/Art/Hovl Studio/MoonSword/Prefabs
     m_Globs: []
     m_OriginalText: 
     m_FilterByTypeIntersection: 0
@@ -1639,7 +1639,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 84780000
     m_LastClickedID: 30852
-    m_ExpandedIDs: ffffffff0000000080710000327700003477000036770000387700003a7700003c7700003e77000040770000427700004477000046770000487700004a7700004c7700004e77000050770000527700005477000056770000587700005a7700005c7700005e77000060770000627700006477000066770000687700006a7700006c770000
+    m_ExpandedIDs: ffffffff0000000080710000327700003477000036770000387700003a7700003c7700003e770000407700004277000044770000487700004a7700004c7700004e77000054770000567700005a7700005e770000607700006277000066770000687700006a7700006c770000b4770000d677000048780000be8000007c810000308800006c890000dc890000de890000fa890000148e0000348e000046c9000062f9000080f9000082f9000088f900008af90000acf90000bcf90000cc800100ce800100d4800100d8800100e0800100448601004a8601008a8601009c860100ec86010004870100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1664,24 +1664,24 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_AssetTreeState:
-    scrollPos: {x: 0, y: 644}
-    m_SelectedIDs: 948d0000
-    m_LastClickedID: 36244
-    m_ExpandedIDs: ffffffff0000000080710000327700003477000036770000387700003a7700003c7700003e770000407700004277000044770000487700004a7700004c7700005077000054770000567700005a7700005e770000607700006277000066770000687700006a7700006c770000b4770000bc770000d677000048780000be8000007c81000030880000dc890000de890000fa890000ca8c0000b48d0000148e00005ac8000072c800003cdb000052f9000062f9000080f9000082f9000088f900008af90000acf90000bcf90000
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 
+    m_LastClickedID: 0
+    m_ExpandedIDs: ffffffff0000000080710000327700003477000036770000387700003a7700003c7700003e770000407700004277000044770000487700004a7700004c7700004e77000054770000567700005a7700005e770000607700006277000066770000687700006a7700006c770000b4770000d677000048780000be8000007c810000308800006c890000dc890000de890000fa890000148e0000348e000046c9000062f9000080f9000082f9000088f900008af90000acf90000bcf90000cc800100ce800100d4800100d8800100e0800100448601004a8601008a8601009c860100ec86010004870100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Skill__Smite
-      m_OriginalName: Skill__Smite
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: -32238
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 14}
     m_SearchString: 
@@ -1692,8 +1692,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 948d0000
-    m_LastClickedInstanceID: 36244
+    m_SelectedInstanceIDs: 
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: 
     m_RenameOverlay:
@@ -1719,7 +1719,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 0}
+    m_ScrollPosition: {x: 0, y: 13450.055}
     m_GridSize: 64
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 115

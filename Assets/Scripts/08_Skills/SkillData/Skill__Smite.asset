@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: 
   icon: {fileID: 0}
   description: 
-  coolDown: 2
+  cooldown: 2
   manaCost: 10
+  animTriggerName: thunder_skill
   strategy: {fileID: 11400000, guid: 8f0715ae0a85b504e9d6c6622244551c, type: 2}
