@@ -1,19 +1,19 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-//µ¥¸ö¼¼ÄÜÀ¸Î»
+//å•ä¸ªæŠ€èƒ½æ ä½
 [System.Serializable]
 public class SkillSlot
 {
-    public SkillData data;          //¼¼ÄÜ¾²Ì¬Êı¾İ
-    public float currentCooldown;   //µ±Ç°ÀäÈ´Ê±¼ä
+    public SkillData data;          //æŠ€èƒ½é™æ€æ•°æ®
+    public float currentCooldown;   //å½“å‰å†·å´æ—¶é—´
 
-    //¸¨ÖúÊôĞÔ ¼¼ÄÜÊÇ·ñÀäÈ´
+    //è¾…åŠ©å±æ€§ æŠ€èƒ½æ˜¯å¦å†·å´
     public bool IsReady => currentCooldown <= 0;
 
-    //¼ÆËã¼¼ÄÜµ±Ç°ÀäÈ´Ê±¼ä
+    //è®¡ç®—æŠ€èƒ½å½“å‰å†·å´æ—¶é—´
     public void Tick( float deltaTime )
     {
         if( currentCooldown > 0)
@@ -22,7 +22,7 @@ public class SkillSlot
         }
     }
 
-    //¼¼ÄÜ½øÈëÀäÈ´Ê±¼ä
+    //æŠ€èƒ½è¿›å…¥å†·å´æ—¶é—´
     public void StartCooldown()
     {
         if( data  != null)
@@ -34,28 +34,32 @@ public class SkillSlot
 
 public class PlayerSkillManager : MonoBehaviour
 {
-    [Header("ÅäÖÃ¼¼ÄÜ×é")]
+    [Header("é…ç½®æŠ€èƒ½ç»„")]
     public List<SkillSlot> skillSlots = new List<SkillSlot>();        
 
-    //Íæ¼ÒÒıÓÃ£¬ĞèÒª»ñÈ¡¼¼ÄÜ·¢ÆğµÄÄ¿±ê
+    //ç©å®¶å¼•ç”¨ï¼Œéœ€è¦è·å–æŠ€èƒ½å‘èµ·çš„ç›®æ ‡
     private PlayerController player;
 
-    //¶¯»­°ü×°Æ÷Àà
-    private CharacterAnimation view;
+    //æŠ€èƒ½æŒ‡ç¤ºå™¨
+    public SkillIndicator skillIndicator;
 
     private void Awake()
     {
         player = GetComponent<PlayerController>();
-        view = GetComponent<CharacterAnimation>();
+        // åŠ ä¸Š trueå‚æ•°ï¼šæ„æ€æ˜¯ "includeInactive" (åŒ…å«æœªæ¿€æ´»çš„ç‰©ä½“)
+        skillIndicator = GetComponentInChildren<SkillIndicator>(true);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if( InputManager.Instance != null)
+        
+
+        if ( InputManager.Instance != null)
         {
             //InputManager.Instance.OnSkill1 += UseSkill;
-            InputManager.Instance.OnSkill1 += () => CastSkill(0);
+            //InputManager.Instance.OnSkill1 += () => CastSkill(0);
+            InputManager.Instance.OnSkill1 += () => OnSkillButtonPress(0);
         }
     }
 
@@ -64,83 +68,125 @@ public class PlayerSkillManager : MonoBehaviour
         if (InputManager.Instance != null)
         {
             //InputManager.Instance.OnSkill1 -= UseSkill;
-            InputManager.Instance.OnSkill1 += () => CastSkill(0);
+            //InputManager.Instance.OnSkill1 += () => CastSkill(0);
+            InputManager.Instance.OnSkill1 -= () => OnSkillButtonPress(0);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //ÀäÈ´Ê±¼äµ¹¼ÆÊ±
+        //å†·å´æ—¶é—´å€’è®¡æ—¶
         foreach( var slot in skillSlots )
         {
             slot.Tick( Time.deltaTime );
         }
     }
 
-    //ºËĞÄ·½·¨£¬¸ù¾İ¼¼ÄÜµÄË÷ÒıÊ©·Å¾ßÌå¼¼ÄÜ
-    private void CastSkill( int index )
+    public void OnSkillButtonPress( int index)
     {
-        //°²È«¼ì²é
-        if( index < 0 || index >= skillSlots.Count ) return;
-
-        //ÄÃ³ö¾ßÌåµÄ¼¼ÄÜ
-        var slot = skillSlots[index];
-        if( slot == null )  return;         //¿Õ²ÛÎ»
-
-        //ÀäÈ´Ê±¼ä¼ì²é
-        if( !slot.IsReady )
+        // å¦‚æœå·²ç»åœ¨æ–½æ³•æˆ–ç„å‡†ï¼Œç¦æ­¢æ‰“æ–­ï¼ˆæˆ–è€…æ ¹æ®éœ€æ±‚å…è®¸æ‰“æ–­ï¼‰
+        // è¿™é‡Œå…ˆç¦æ­¢ï¼Œé˜²æ­¢é€»è¾‘æ··ä¹±
+        if (player.stateMachine.CurrentState == player.playerCastState ||
+            player.stateMachine.CurrentState == player.playerAimState)
         {
-            Debug.Log("¼¼ÄÜÀäÈ´ÖĞ");
             return;
         }
 
+        //å®‰å…¨æ£€æŸ¥
+        if (index < 0 || index >= skillSlots.Count) return;
+
+        //æ‹¿å‡ºå…·ä½“çš„æŠ€èƒ½
+        var slot = skillSlots[index];
         
-        //Ä¿±êÑ¡Ôñ
+        //ç©ºæ•°æ®æ£€æŸ¥
+        if( slot == null || slot.data == null ) return;
+
+        //å†·å´æ—¶é—´æ£€æŸ¥
+        if (!slot.IsReady)
+        {
+            Debug.Log("æŠ€èƒ½å†·å´ä¸­");
+            return;
+        }
+
+        //æ ¸å¿ƒé€»è¾‘åˆ†æµï¼ŒæŠ€èƒ½æ˜¯å¦éœ€è¦ç›®æ ‡
+        if( slot.data.requireTarget)
+        {
+            //éœ€è¦ç„å‡†çš„æŠ€èƒ½åˆ‡æ¢åˆ°ç„å‡†çŠ¶æ€
+            player.playerAimState.SetSkill(slot);
+            player.SwitchState(player.playerAimState);
+        }
+        else
+        {
+            //ä¸éœ€è¦ç„å‡† ç›´æ¥åˆ‡æ¢åˆ°æ–½æ³•çŠ¶æ€
+            player.playerCastState.SetSkill(slot, null);
+            player.SwitchState(player.playerCastState);
+        }
+
+    }
+
+    //æ ¸å¿ƒæ–¹æ³•ï¼Œæ ¹æ®æŠ€èƒ½çš„ç´¢å¼•æ–½æ”¾å…·ä½“æŠ€èƒ½
+    private void CastSkill( int index )
+    {
+        //å®‰å…¨æ£€æŸ¥
+        if( index < 0 || index >= skillSlots.Count ) return;
+
+        //æ‹¿å‡ºå…·ä½“çš„æŠ€èƒ½
+        var slot = skillSlots[index];
+        if( slot == null )  return;         //ç©ºæ§½ä½
+
+        //å†·å´æ—¶é—´æ£€æŸ¥
+        if( !slot.IsReady )
+        {
+            Debug.Log("æŠ€èƒ½å†·å´ä¸­");
+            return;
+        }
+        
+        //ç›®æ ‡é€‰æ‹©
         //Transform target = FindObjectOfType<EnemyController>()?.transform;
         Transform target = GetTargetUnderMouse();
         if (target == null)
         {
-            Debug.Log("ĞèÒªÑ¡ÔñÒ»¸öÄ¿±ê£¡");
+            Debug.Log("éœ€è¦é€‰æ‹©ä¸€ä¸ªç›®æ ‡ï¼");
             return;
         }
 
-        //Ö±½Óµ÷ÓÃµÄÊÍ·Å¼¼ÄÜ·½Ê½
-        ////²¥·Å¶ÔÓ¦¶¯»­
+        //ç›´æ¥è°ƒç”¨çš„é‡Šæ”¾æŠ€èƒ½æ–¹å¼
+        ////æ’­æ”¾å¯¹åº”åŠ¨ç”»
         //if( !string.IsNullOrEmpty(slot.data.animTriggerName))
         //{
         //    view.TriggleSkill(slot.data.animTriggerName);
         //}
 
-        //// 4. Ö´ĞĞ²ßÂÔ (²å¿¨´ø£¡)
-        //// ÕâÀïµÄ strategy ¾ÍÊÇÄãÅäÖÃµÄ DirectDamageStrategy
+        //// 4. æ‰§è¡Œç­–ç•¥ (æ’å¡å¸¦ï¼)
+        //// è¿™é‡Œçš„ strategy å°±æ˜¯ä½ é…ç½®çš„ DirectDamageStrategy
         //slot.data.strategy.Cast(this.transform, target);
 
-        //Í¨¹ıÊ©·¨×´Ì¬À´ÊÍ·Å¼¼ÄÜ
+        //é€šè¿‡æ–½æ³•çŠ¶æ€æ¥é‡Šæ”¾æŠ€èƒ½
         var castState = player.playerCastState;
-        //´«µİ²ÎÊı
+        //ä¼ é€’å‚æ•°
         castState.SetSkill(slot, target);
 
-        //ÇĞ»»×´Ì¬
+        //åˆ‡æ¢çŠ¶æ€
         player.SwitchState(castState);
 
 
 
-        // 5. ½øÈëÀäÈ´
+        // 5. è¿›å…¥å†·å´
         slot.StartCooldown();
 
-        Debug.Log($"Ê¹ÓÃÁË¼¼ÄÜ: {slot.data.skillName}");
+        Debug.Log($"ä½¿ç”¨äº†æŠ€èƒ½: {slot.data.skillName}");
     }
 
-    //»ñÈ¡Êó±êÖ¸ÏòµÄµĞÈË£¬×÷Îª¼¼ÄÜµÄ¹¥»÷Ä¿±ê
-    private Transform GetTargetUnderMouse()
+    //è·å–é¼ æ ‡æŒ‡å‘çš„æ•Œäººï¼Œä½œä¸ºæŠ€èƒ½çš„æ”»å‡»ç›®æ ‡
+    public Transform GetTargetUnderMouse()
     {
-        //»ñÈ¡Êó±êÉäÏß
+        //è·å–é¼ æ ‡å°„çº¿
         Ray ray = Camera.main.ScreenPointToRay( Input.mousePosition );
         RaycastHit hitInfo;
 
-        //ÉäÏß¼ì²â
-        //»ñÈ¡EnemyËùÔÚµÄLayerMask
+        //å°„çº¿æ£€æµ‹
+        //è·å–Enemyæ‰€åœ¨çš„LayerMask
         int enemyLyaer = LayerMask.GetMask("Enemy");
 
         if(Physics.Raycast(ray, out hitInfo, 100f,enemyLyaer))
@@ -148,7 +194,7 @@ public class PlayerSkillManager : MonoBehaviour
             return hitInfo.transform;
         }
 
-        //Ã»ÓĞµã»÷µ½µĞÈË
+        //æ²¡æœ‰ç‚¹å‡»åˆ°æ•Œäºº
         return null;
     }
 }

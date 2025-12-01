@@ -21,10 +21,18 @@ public class CharacterAnimation : MonoBehaviour
     }
 
     //封装方法，对外部只提供行为，不暴露参数名
-    public void SetMoveSpeed( float velocity)
+    // 增加 dampTime 参数，默认值给 0.1f
+    public void SetMoveSpeed(float velocity, float dampTime = 0.1f)
     {
-        // 可以在这里统一处理阻尼，状态类就不用管了
-        anim.SetFloat(SpeedHash, velocity, 0.1f, Time.deltaTime);
+        // 如果 dampTime 是 0，就不用 damp 版本的方法，或者传 0 进去
+        if (dampTime <= 0)
+        {
+            anim.SetFloat(SpeedHash, velocity); // 瞬变！
+        }
+        else
+        {
+            anim.SetFloat(SpeedHash, velocity, dampTime, Time.deltaTime); // 渐变
+        }
     }
 
     public void TriggerAttack()

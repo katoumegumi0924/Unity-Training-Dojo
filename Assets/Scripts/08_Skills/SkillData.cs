@@ -17,6 +17,10 @@ public class SkillData : ScriptableObject
     public float castDuration = 1f;     //施法时间，期间玩家无法移动
     public float damageDelay = 0.5f;    //施法前摇时间
 
+    [Header("释放规则")]
+    public bool requireTarget;          //是否需要选择目标
+    public float castRange;             //施法范围
+
     [Header("表现")]
     public string animTriggerName;
 

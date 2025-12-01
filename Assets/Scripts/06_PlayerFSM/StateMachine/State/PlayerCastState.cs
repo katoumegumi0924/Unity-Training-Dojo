@@ -28,6 +28,7 @@ public class PlayerCastState : IState
         //施法期间停止移动
         player.agent.isStopped = true;
         player.agent.velocity = Vector3.zero;
+        player.agent.ResetPath();
         player.playerAnim.SetMoveSpeed(0);
 
         //面向施法目标（如果有）
@@ -63,6 +64,9 @@ public class PlayerCastState : IState
     //施法协程
     IEnumerator CastRoutine()
     {
+        //开始计算计算技能冷却
+        currentSkill.StartCooldown();
+
         //等待前摇
         yield return new WaitForSeconds(currentSkill.data.damageDelay);
 

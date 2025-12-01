@@ -41,7 +41,7 @@ public class HurtState : IState
         timer += Time.deltaTime;
         if( timer >= stunTime)
         {
-            Debug.Log("ËÀÍö×´Ì¬£º " + manager.health.isDead);
+            //Debug.Log("ËÀÍö×´Ì¬£º " + manager.health.isDead);
             ////Èç¹ûÒÔËÀÍö  ÇĞ»»µ½ËÀÍö×´Ì¬
             //if( manager.health.isDead)
             //{

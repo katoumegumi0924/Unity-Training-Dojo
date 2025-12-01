@@ -20,6 +20,7 @@ public class PlayerIdleState : IState
         {
             //player.anim.SetFloat("Speed", 0f);
             player.playerAnim.SetMoveSpeed(0);
+            Debug.Log("Idle重置速度");
         }
 
         // 这是一个好习惯：切回待机时重置路径，防止意外滑动

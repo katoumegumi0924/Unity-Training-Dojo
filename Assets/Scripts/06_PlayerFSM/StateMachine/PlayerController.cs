@@ -15,12 +15,13 @@ public class PlayerController : MonoBehaviour
     public Vector3 targetPos;
 
     //状态机相关
-    private StateMachine stateMachine;
+    public StateMachine stateMachine;
     //缓存状态
     public PlayerIdleState playerIdleState;
     public PlayerMoveState playerMoveState;
     public PlayerAttackState playerAttackState;
     public PlayerCastState playerCastState;
+    public PlayerAimState playerAimState;
 
     [Header("输入配置")]
     public LayerMask clickableLayers;
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour
         playerMoveState = new PlayerMoveState(this);
         playerAttackState = new PlayerAttackState(this);
         playerCastState = new PlayerCastState(this);
+        playerAimState = new PlayerAimState(this);
 
         // 默认设置??
         agent.stoppingDistance = 0.1f;

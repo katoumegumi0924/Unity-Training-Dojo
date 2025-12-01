@@ -7,6 +7,7 @@ using UnityEngine;
 public class DirectDamageStrategy : SkillStrategy
 {
     public int damage = 20;
+    public float validRange = 3.0f;     //最大有效距离
     public GameObject hitEffect;        //技能特效
 
     private PlayerController player;
@@ -16,6 +17,13 @@ public class DirectDamageStrategy : SkillStrategy
     {
         if(target == null) return;
 
+        //距离校验，确定在技能范围之内
+        float dist = Vector3.Distance(caster.position, target.position);
+        if( dist > validRange)
+        {
+            Debug.Log("距离太远，技能未命中！");
+            return; // 距离不够，打不到
+        }
         
 
         //扣血逻辑
