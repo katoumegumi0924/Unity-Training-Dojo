@@ -204,7 +204,9 @@ flyIcon.transform
 <div align="center">
   <img src="./gif/demo_skill2.gif" width="600" />
 </div>
-
+<div align="center">
+  <img src="./gif/demo_skill3.gif" width="600" />
+</div>
 ## 7.1 系统概述（Overview）
 基于 **策略模式（Strategy Pattern）** 构建了一套可高度扩展的技能架构。
 系统支持**数据驱动**的技能配置（冷却、图标、前摇），并实现**逻辑与表现的严格同步。
@@ -216,7 +218,7 @@ flyIcon.transform
 * **抽象基类** ：`SkillStrategy`(继承自 ScriptableObject)。
 * **具体策略**：
     *   `DirectDamageStrategy`：锁定目标，直接造成伤害。
-    *   *(扩展预留)* `ProjectileStrategy`：发射物理投射物。
+    *   `ProjectileStrategy`：发射物理投射物。
     *   *(扩展预留)* `AOEStrategy`：范围爆炸伤害。
 *   **优势**：新增技能只需编写新的策略脚本并创建资产，无需修改 `PlayerSkillManager` 的核心代码。
 
