@@ -19,5 +19,7 @@ MonoBehaviour:
   manaCost: 10
   castDuration: 1.15
   damageDelay: 0.8
+  requireTarget: 1
+  castRange: 10
   animTriggerName: thunder_skill
   strategy: {fileID: 11400000, guid: 8f0715ae0a85b504e9d6c6622244551c, type: 2}

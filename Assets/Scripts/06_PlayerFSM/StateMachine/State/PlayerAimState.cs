@@ -94,10 +94,20 @@ public class PlayerAimState : IState
     private void OnClickToCast()
     {
         //获取目标
-        Transform target = skillMgr.GetTargetUnderMouse();
+        //Transform target = skillMgr.GetTargetUnderMouse();
+        Transform target = skillMgr.GetSmartTarget();
 
-        if( target != null )
+        if ( target != null )
         {
+            // --- 新增：距离校验 ---
+            float dist = Vector3.Distance(player.transform.position, target.position);
+            if (dist > currentSkill.data.castRange)
+            {
+                // 可以在这里播一个 "哔哔" 的错误音效，或者飘字 "距离太远"
+                Debug.Log($"<color=red>距离太远！当前: {dist:F1}, 射程: {currentSkill.data.castRange}</color>");
+                return; // 拦截！不切换状态，不播动画
+            }
+
             //设置 技能释放状态参数
             player.playerCastState.SetSkill(currentSkill, target);
             //切换到技能释放状态

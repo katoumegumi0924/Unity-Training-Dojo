@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Strategy_Smite
   m_EditorClassIdentifier: 
   damage: 20
+  validRange: 10
   hitEffect: {fileID: 5627696518775099638, guid: 00dd6efc06d3d904f8c54712b85f5042, type: 3}

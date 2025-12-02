@@ -197,4 +197,57 @@ public class PlayerSkillManager : MonoBehaviour
         //没有点击到敌人
         return null;
     }
+
+    //辅助瞄准，自动选择离鼠标最近的对象
+    public Transform GetSmartTarget()
+    {
+        Debug.Log($"<color=green> 辅助检测</color>");
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitInfo;
+
+        //优先检测 是否直接点击到了敌人
+        int enemyLayerMask = LayerMask.GetMask("Enemy");
+        if (Physics.Raycast(ray, out hitInfo, 100f, enemyLayerMask))
+        {
+            return hitInfo.transform;
+        }
+
+        //辅助检测 如果没有直接点击到敌人，检测鼠标点击的地面周围是否存在敌人
+        int groundLayerMask = LayerMask.GetMask("Ground");
+        if (Physics.Raycast(ray, out hitInfo, 1000f, groundLayerMask))
+        {
+            Debug.Log($"<color=green> 辅助检测--地面</color>");
+
+            //在鼠标落点 3m 内搜索敌人
+            float searchRadius = 5.0f;
+            //范围检测
+            Collider[] enemies = Physics.OverlapSphere(hitInfo.point, searchRadius, enemyLayerMask);
+            Debug.Log($"<color=green> 辅助检测：Collider{enemies == null}</color>");
+
+            //找出最近的一个
+            Transform bestTarget = null;
+            //用平方距离比较，性能更好
+            float closetDistSqr = Mathf.Infinity;
+
+            foreach ( var enemy in enemies )
+            {
+                //计算敌人与鼠标落点的平方距离
+                float dSqr = (enemy.transform.position - hitInfo.point).sqrMagnitude;
+                if ( dSqr < closetDistSqr )
+                {
+                    closetDistSqr = dSqr;
+                    bestTarget = enemy.transform;
+                }
+            }
+
+            if (bestTarget != null)
+            {
+                // 可选：在这里给 bestTarget 加一个高亮框，提升反馈
+                Debug.Log($"<color=green> 辅助瞄准成功</color>");
+                return bestTarget;
+            }          
+        }
+        return null; // 真的啥也没点到
+    }
 }
