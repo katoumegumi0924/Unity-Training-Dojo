@@ -13,7 +13,7 @@ public class DirectDamageStrategy : SkillStrategy
     private PlayerController player;
 
     //实现父类的抽象方法
-    public override void Cast(Transform caster, Transform target)
+    public override void Cast(Transform caster, Transform target, Vector3 point)
     {
         if(target == null) return;
 
@@ -38,7 +38,8 @@ public class DirectDamageStrategy : SkillStrategy
         if (hitEffect != null)
         {
             // 这里以后可以用对象池优化，现在先 Instantiate
-            Instantiate(hitEffect, target.position + Vector3.down, Quaternion.identity);
+            GameObject obj = Instantiate(hitEffect, target.position + Vector3.down, Quaternion.identity);
+            Destroy(obj,2);
         }
     }
 }

@@ -53,6 +53,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill2"",
+                    ""type"": ""Button"",
+                    ""id"": ""098f9ce0-eb95-4cc2-bdb5-5babc38daf67"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -88,6 +97,17 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""action"": ""Skill1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f837ecd5-0601-4f54-84d9-cbf50815903a"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -99,6 +119,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_Click = m_Gameplay.FindAction("Click", throwIfNotFound: true);
         m_Gameplay_MousePosition = m_Gameplay.FindAction("MousePosition", throwIfNotFound: true);
         m_Gameplay_Skill1 = m_Gameplay.FindAction("Skill1", throwIfNotFound: true);
+        m_Gameplay_Skill2 = m_Gameplay.FindAction("Skill2", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -163,6 +184,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Click;
     private readonly InputAction m_Gameplay_MousePosition;
     private readonly InputAction m_Gameplay_Skill1;
+    private readonly InputAction m_Gameplay_Skill2;
     public struct GameplayActions
     {
         private @GameControls m_Wrapper;
@@ -170,6 +192,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         public InputAction @Click => m_Wrapper.m_Gameplay_Click;
         public InputAction @MousePosition => m_Wrapper.m_Gameplay_MousePosition;
         public InputAction @Skill1 => m_Wrapper.m_Gameplay_Skill1;
+        public InputAction @Skill2 => m_Wrapper.m_Gameplay_Skill2;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -188,6 +211,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @Skill1.started += instance.OnSkill1;
             @Skill1.performed += instance.OnSkill1;
             @Skill1.canceled += instance.OnSkill1;
+            @Skill2.started += instance.OnSkill2;
+            @Skill2.performed += instance.OnSkill2;
+            @Skill2.canceled += instance.OnSkill2;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -201,6 +227,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @Skill1.started -= instance.OnSkill1;
             @Skill1.performed -= instance.OnSkill1;
             @Skill1.canceled -= instance.OnSkill1;
+            @Skill2.started -= instance.OnSkill2;
+            @Skill2.performed -= instance.OnSkill2;
+            @Skill2.canceled -= instance.OnSkill2;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -223,5 +252,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         void OnClick(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
         void OnSkill1(InputAction.CallbackContext context);
+        void OnSkill2(InputAction.CallbackContext context);
     }
 }

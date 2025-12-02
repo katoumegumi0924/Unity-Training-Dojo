@@ -12,15 +12,18 @@ public class PlayerCastState : IState
         this.player = player;
     }
 
-    //要施放的技能休息
+    //要施放的技能信息
     private SkillSlot currentSkill;
     private Transform currentTarget;
 
+    private Vector3 targetPoint; // 鼠标点击的地面坐标
+
     //接收参数方法
-    public void SetSkill( SkillSlot slot, Transform target )
+    public void SetSkill( SkillSlot slot, Transform target, Vector3 point )
     {
-        currentSkill = slot;    
-        currentTarget = target;
+        this.currentSkill = slot;    
+        this.currentTarget = target;
+        this.targetPoint = point;
     }
 
     public void OnEnter()
@@ -35,6 +38,13 @@ public class PlayerCastState : IState
         if( currentTarget != null)
         {
             player.transform.LookAt( new Vector3( currentTarget.position.x, player.transform.position.y, currentTarget.position.z ) );
+        }
+        //没有目标，看向鼠标指定的施法点
+        else
+        {
+            Vector3 lookPos = targetPoint;
+            lookPos.y = player.transform.position.y;
+            player.transform.LookAt( lookPos );
         }
 
         //播放对应的施法动画
@@ -71,7 +81,7 @@ public class PlayerCastState : IState
         yield return new WaitForSeconds(currentSkill.data.damageDelay);
 
         //正式释放技能，进行技能伤害判定
-        currentSkill.data.strategy.Cast(player.transform, currentTarget);
+        currentSkill.data.strategy.Cast(player.transform, currentTarget, targetPoint);
             
         //等待技能后摇
         float remainingTime = currentSkill.data.castDuration - currentSkill.data.damageDelay;

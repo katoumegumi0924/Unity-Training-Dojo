@@ -60,6 +60,7 @@ public class PlayerSkillManager : MonoBehaviour
             //InputManager.Instance.OnSkill1 += UseSkill;
             //InputManager.Instance.OnSkill1 += () => CastSkill(0);
             InputManager.Instance.OnSkill1 += () => OnSkillButtonPress(0);
+            InputManager.Instance.OnSkill2 += () => OnSkillButtonPress(1);
         }
     }
 
@@ -70,6 +71,7 @@ public class PlayerSkillManager : MonoBehaviour
             //InputManager.Instance.OnSkill1 -= UseSkill;
             //InputManager.Instance.OnSkill1 += () => CastSkill(0);
             InputManager.Instance.OnSkill1 -= () => OnSkillButtonPress(0);
+            InputManager.Instance.OnSkill2 -= () => OnSkillButtonPress(1);
         }
     }
 
@@ -118,14 +120,26 @@ public class PlayerSkillManager : MonoBehaviour
         }
         else
         {
-            //不需要瞄准 直接切换到施法状态
-            player.playerCastState.SetSkill(slot, null);
-            player.SwitchState(player.playerCastState);
+            // 获取鼠标在地面的点击点 (用于非锁定技能的方向计算)
+            Vector3 mousePoint = Vector3.zero;
+            //如果鼠标点击到了地板，朝鼠标位置施法
+            if( TryGetMousePosition(out mousePoint))
+            {
+                //不需要瞄准 直接切换到施法状态
+                player.playerCastState.SetSkill(slot, null, mousePoint);
+                player.SwitchState(player.playerCastState);
+            }
+            //鼠标没有点击到地板 朝人物前方施法
+            else
+            {
+                player.playerCastState.SetSkill(slot, null, player.transform.forward + player.transform.position);
+            }
+            
         }
 
     }
 
-    //核心方法，根据技能的索引施放具体技能
+    //核心方法，根据技能的索引施放具体技能 弃用
     private void CastSkill( int index )
     {
         //安全检查
@@ -165,7 +179,7 @@ public class PlayerSkillManager : MonoBehaviour
         //通过施法状态来释放技能
         var castState = player.playerCastState;
         //传递参数
-        castState.SetSkill(slot, target);
+        castState.SetSkill(slot, target, target.position);
 
         //切换状态
         player.SwitchState(castState);
@@ -249,5 +263,20 @@ public class PlayerSkillManager : MonoBehaviour
             }          
         }
         return null; // 真的啥也没点到
+    }
+
+    //辅助方法，获取鼠标当前点击的位置
+    //Try-Get 模式， 返回 bool 表示是否成功，position 带出结果
+    public bool TryGetMousePosition( out Vector3 position )
+    {
+        Ray ray = Camera.main.ScreenPointToRay(InputManager.Instance.MousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, LayerMask.GetMask("Ground")))
+        {
+            position = hit.point;
+            return true;
+        }
+        // 虽然赋值了，但外面看到返回 false 就不会用它
+        position = Vector3.zero;
+        return false;
     }
 }

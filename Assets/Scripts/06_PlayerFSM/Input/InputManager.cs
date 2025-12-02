@@ -15,6 +15,8 @@ public class InputManager : MonoBehaviour
     public event Action OnClick;
     //技能1，绑定Q键
     public event Action OnSkill1;
+    //技能2，绑定W键
+    public event Action OnSkill2;
 
 
     //鼠标位置
@@ -36,7 +38,7 @@ public class InputManager : MonoBehaviour
             // ctx 是 context (上下文)，这里我们不需要它，所以忽略
             gameControls.Gameplay.Click.performed += ctx => OnClick?.Invoke();
             gameControls.Gameplay.Skill1.performed += ctx => OnSkill1?.Invoke();
-
+            gameControls.Gameplay.Skill2.performed += ctx => OnSkill2?.Invoke();
         }
         else
         {

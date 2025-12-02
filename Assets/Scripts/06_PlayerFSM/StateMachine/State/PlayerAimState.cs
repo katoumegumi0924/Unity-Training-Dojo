@@ -99,7 +99,7 @@ public class PlayerAimState : IState
 
         if ( target != null )
         {
-            // --- 新增：距离校验 ---
+            // --- 距离校验 ---
             float dist = Vector3.Distance(player.transform.position, target.position);
             if (dist > currentSkill.data.castRange)
             {
@@ -109,7 +109,7 @@ public class PlayerAimState : IState
             }
 
             //设置 技能释放状态参数
-            player.playerCastState.SetSkill(currentSkill, target);
+            player.playerCastState.SetSkill(currentSkill, target, target.position);
             //切换到技能释放状态
             player.SwitchState(player.playerCastState);
         }
