@@ -202,7 +202,7 @@ flyIcon.transform
 
 ## 7. 可扩展技能系统 (Scalable Skill System)
 <div align="center">
-  <img src="./gif/demo_skill.gif" width="600" />
+  <img src="./gif/demo_skill2.gif" width="600" />
 </div>
 
 ## 7.1 系统概述（Overview）
@@ -240,6 +240,43 @@ flyIcon.transform
 
 *   **状态锁定**：进入 `CastState` 时强制 `agent.ResetPath()` 并锁定输入，防止施法滑步。
 *   **动画同步**：利用 `SkillData` 中的 `castDelay` 参数配合协程，精确控制伤害/特效触发时机，使其与动画挥砍的关键帧对齐。
+*   **智能索敌 (Smart Targeting / Aim Assist)**：
+    *   **存在问题**：之前选择技能目标需要精准点击到敌人，操作不友好。
+    *   **解决方案**：使用范围检测，实现了“磁吸式”辅助瞄准。
+    *   **算法**：当鼠标点击地面时，利用 `Physics.OverlapSphere` 检测落点周围一定范围内的敌人，通过遍历比较 **距离平方 (sqrMagnitude)**，自动锁定最近的目标。
+*   **施法距离校验 (Range Check)**：
+    *   在进入施法状态前进行逻辑拦截。如果目标超出 `SkillData.castRange`，直接阻断操作并反馈，避免出现“原地空挥”的穿帮视觉。
+    #### 💡 智能索敌核心逻辑
+```csharp
+// 寻找鼠标落点周围最近的敌人
+Collider[] enemies = Physics.OverlapSphere(hitPoint, searchRadius, enemyLayerMask);
+float closestDistSqr = Mathf.Infinity;
+
+foreach (var enemy in enemies)
+{
+    float dSqr = (enemy.transform.position - hitPoint).sqrMagnitude;
+    // 寻找最小值
+    if (dSqr < closestDistSqr)
+    {
+        closetDistSqr = dSqr;
+        bestTarget = enemy.transform;
+    }
+}
+```
+*   **MOBA 风格技能指示器 (Skill Indicator)**：
+    *   **交互逻辑**：引入了 **瞄准状态 (AimState)**。按下技能键时，角色进入静止瞄准模式，显示技能范围圈，等待玩家二次确认（左键释放）。
+    *   **可视化实现**：使用扁平化的 Sprite（圆环贴图）模拟投影效果。
+    *   **动态适配**：指示器脚本根据 `SkillData.castRange` 动态计算 `LocalScale`，确保视觉范围与逻辑判定范围严格一致。
+
+    #### 💡 指示器动态缩放逻辑
+```csharp
+public void Show(float radius)
+{
+    gameObject.SetActive(true);
+    // 假设 Sprite 原始大小为 1单元，Scale = 直径 (半径 * 2)
+    float diameter = radius * 2;
+    transform.localScale = new Vector3(diameter, diameter, 1f);
+}
 
 
 

@@ -159,7 +159,7 @@
     },
     "com.unity.render-pipelines.core": {
       "version": "12.1.15",
-      "depth": 1,
+      "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
@@ -180,7 +180,7 @@
     },
     "com.unity.searcher": {
       "version": "4.9.1",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.cn"
@@ -194,7 +194,7 @@
     },
     "com.unity.shadergraph": {
       "version": "12.1.15",
-      "depth": 1,
+      "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.render-pipelines.core": "12.1.15",
@@ -403,7 +403,7 @@
     },
     "com.unity.modules.uielementsnative": {
       "version": "1.0.0",
-      "depth": 1,
+      "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",
