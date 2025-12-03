@@ -9,6 +9,7 @@ public class ItemData : ScriptableObject
     public int itemID;          // 唯一ID (用于字典查找)
     public string itemName;     // 名字
     public Sprite icon;         // 图标 (UI显示用)
+    public ItemType type;       //物品类型
 
     [TextArea]
     public string description;  // 描述
@@ -18,3 +19,4 @@ public class ItemData : ScriptableObject
     public int maxStackSize = 1; // 最大堆叠数
 }
     
+public enum ItemType { Consumble, Weapon, Material}
