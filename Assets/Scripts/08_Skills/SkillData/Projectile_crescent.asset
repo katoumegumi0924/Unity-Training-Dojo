@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4680dba2ff5b2924887068db7617fd39, type: 3}
   m_Name: Projectile_crescent
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 2866256517337646839, guid: 5644f36b17514584698e5cda585afc23, type: 3}
   hitPrefab: {fileID: 0}
   flySpeed: 10
   damage: 30
-  spawnOffset: {x: 0, y: 1.5, z: 0.5}
+  spawnOffset: {x: 0, y: 0, z: 0.5}

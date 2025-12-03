@@ -43,6 +43,10 @@ public class PlayerSkillManager : MonoBehaviour
     //技能指示器
     public SkillIndicator skillIndicator;
 
+    //按键点击的包装方法
+    private void OnPressSkill1() => OnSkillButtonPress(0);
+    private void OnPressSkill2() => OnSkillButtonPress(1);
+
     private void Awake()
     {
         player = GetComponent<PlayerController>();
@@ -59,8 +63,8 @@ public class PlayerSkillManager : MonoBehaviour
         {
             //InputManager.Instance.OnSkill1 += UseSkill;
             //InputManager.Instance.OnSkill1 += () => CastSkill(0);
-            InputManager.Instance.OnSkill1 += () => OnSkillButtonPress(0);
-            InputManager.Instance.OnSkill2 += () => OnSkillButtonPress(1);
+            InputManager.Instance.OnSkill1 += OnPressSkill1;
+            InputManager.Instance.OnSkill2 += OnPressSkill2;
         }
     }
 
@@ -70,8 +74,8 @@ public class PlayerSkillManager : MonoBehaviour
         {
             //InputManager.Instance.OnSkill1 -= UseSkill;
             //InputManager.Instance.OnSkill1 += () => CastSkill(0);
-            InputManager.Instance.OnSkill1 -= () => OnSkillButtonPress(0);
-            InputManager.Instance.OnSkill2 -= () => OnSkillButtonPress(1);
+            InputManager.Instance.OnSkill1 -= OnPressSkill1;    
+            InputManager.Instance.OnSkill2 -= OnPressSkill2;
         }
     }
 
@@ -95,16 +99,10 @@ public class PlayerSkillManager : MonoBehaviour
             return;
         }
 
-        //安全检查
+        //安全检查 空数据检查 冷却时间检查
         if (index < 0 || index >= skillSlots.Count) return;
-
-        //拿出具体的技能
         var slot = skillSlots[index];
-        
-        //空数据检查
         if( slot == null || slot.data == null ) return;
-
-        //冷却时间检查
         if (!slot.IsReady)
         {
             Debug.Log("技能冷却中");
@@ -120,21 +118,36 @@ public class PlayerSkillManager : MonoBehaviour
         }
         else
         {
-            // 获取鼠标在地面的点击点 (用于非锁定技能的方向计算)
-            Vector3 mousePoint = Vector3.zero;
-            //如果鼠标点击到了地板，朝鼠标位置施法
-            if( TryGetMousePosition(out mousePoint))
+            //定义最终目标的施法点 用于非锁定技能的方向计算
+            Vector3 finalCastPoint;
+
+            //优先尝试物理检测(检测地板碰撞器)，
+            if ( TryGetMousePosition(out Vector3 hitPoint))
             {
-                //不需要瞄准 直接切换到施法状态
-                player.playerCastState.SetSkill(slot, null, mousePoint);
-                player.SwitchState(player.playerCastState);
+                finalCastPoint = hitPoint;
             }
-            //鼠标没有点击到地板 朝人物前方施法
+            //鼠标没有点击到地板，创建一个数学平面作为保底
             else
             {
-                player.playerCastState.SetSkill(slot, null, player.transform.forward + player.transform.position);
+                //创建一个位于玩家脚下的水平面
+                Plane infiniteFloor = new Plane( Vector3.up, player.transform.position );
+                Ray ray = Camera.main.ScreenPointToRay(InputManager.Instance.MousePosition);
+
+                if( infiniteFloor.Raycast( ray, out float enterDist))
+                {
+                    // 获取射线在 distance 处的坐标
+                    finalCastPoint = ray.GetPoint(enterDist);
+                }
+                else
+                {
+                    //最后的保底(只有当玩家仰望天空，射线平行或射向天空时才会进这里)，保持朝向前方
+                    finalCastPoint = player.transform.position + player.transform.forward * 5f;
+                }               
             }
-            
+
+            //切换到施法状态 传入计算的坐标
+            player.playerCastState.SetSkill(slot, null, finalCastPoint);
+            player.SwitchState(player.playerCastState);
         }
 
     }

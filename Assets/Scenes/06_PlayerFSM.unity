@@ -909,6 +909,8 @@ MonoBehaviour:
   skillSlots:
   - data: {fileID: 11400000, guid: cd2fbd80a092c864fb7702a7cd5ee8d9, type: 2}
     currentCooldown: 0
+  - data: {fileID: 11400000, guid: 0a54f7766985f744c8e62b423fe8eedc, type: 2}
+    currentCooldown: 0
   skillIndicator: {fileID: 0}
 --- !u!4 &430047948 stripped
 Transform:

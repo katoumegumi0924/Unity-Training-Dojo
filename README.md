@@ -238,17 +238,18 @@ flyIcon.transform
         *   **后置处理**：技能释放成功后重置冷却。
 
 ### 7.3 战斗手感优化 (Combat Polish)
+#### 施法状态(CastState)
 为了解决动作游戏中常见的滑步与不同步问题，引入了专门的 **施法状态 (CastState)**。
 
 *   **状态锁定**：进入 `CastState` 时强制 `agent.ResetPath()` 并锁定输入，防止施法滑步。
 *   **动画同步**：利用 `SkillData` 中的 `castDelay` 参数配合协程，精确控制伤害/特效触发时机，使其与动画挥砍的关键帧对齐。
-*   **智能索敌 (Smart Targeting / Aim Assist)**：
-    *   **存在问题**：之前选择技能目标需要精准点击到敌人，操作不友好。
-    *   **解决方案**：使用范围检测，实现了“磁吸式”辅助瞄准。
-    *   **算法**：当鼠标点击地面时，利用 `Physics.OverlapSphere` 检测落点周围一定范围内的敌人，通过遍历比较 **距离平方 (sqrMagnitude)**，自动锁定最近的目标。
-*   **施法距离校验 (Range Check)**：
-    *   在进入施法状态前进行逻辑拦截。如果目标超出 `SkillData.castRange`，直接阻断操作并反馈，避免出现“原地空挥”的穿帮视觉。
-    #### 💡 智能索敌核心逻辑
+#### **智能索敌 (Smart Targeting / Aim Assist)**：
+*   **存在问题**：之前选择技能目标需要精准点击到敌人，操作不友好。
+*   **解决方案**：使用范围检测，实现了“磁吸式”辅助瞄准。
+*   **算法**：当鼠标点击地面时，利用 `Physics.OverlapSphere` 检测落点周围一定范围内的敌人，通过遍历比较 **距离平方 (sqrMagnitude)**，自动锁定最近的目标。
+
+*   **施法距离校验 (Range Check)**： 在进入施法状态前进行逻辑拦截。如果目标超出 `SkillData.castRange`，直接阻断操作并反馈，避免出现“原地空挥”的穿帮视觉。
+      智能索敌核心逻辑
 ```csharp
 // 寻找鼠标落点周围最近的敌人
 Collider[] enemies = Physics.OverlapSphere(hitPoint, searchRadius, enemyLayerMask);
@@ -265,12 +266,12 @@ foreach (var enemy in enemies)
     }
 }
 ```
-*   **MOBA 风格技能指示器 (Skill Indicator)**：
-    *   **交互逻辑**：引入了 **瞄准状态 (AimState)**。按下技能键时，角色进入静止瞄准模式，显示技能范围圈，等待玩家二次确认（左键释放）。
-    *   **可视化实现**：使用扁平化的 Sprite（圆环贴图）模拟投影效果。
-    *   **动态适配**：指示器脚本根据 `SkillData.castRange` 动态计算 `LocalScale`，确保视觉范围与逻辑判定范围严格一致。
+####   **MOBA 风格技能指示器 (Skill Indicator)**：
+*   **交互逻辑**：引入了 **瞄准状态 (AimState)**。按下技能键时，角色进入静止瞄准模式，显示技能范围圈，等待玩家二次确认（左键释放）。
+*   **可视化实现**：使用扁平化的 Sprite（圆环贴图）模拟投影效果。
+*   **动态适配**：指示器脚本根据 `SkillData.castRange` 动态计算 `LocalScale`，确保视觉范围与逻辑判定范围严格一致。
 
-    #### 💡 指示器动态缩放逻辑
+* 指示器动态缩放逻辑：
 ```csharp
 public void Show(float radius)
 {
@@ -278,6 +279,36 @@ public void Show(float radius)
     // 假设 Sprite 原始大小为 1单元，Scale = 直径 (半径 * 2)
     float diameter = radius * 2;
     transform.localScale = new Vector3(diameter, diameter, 1f);
+}
+```
+
+#### 混合射线检测与无限瞄准(Hybrid Raycasting & Infinite Aiming)
+为了解决鼠标移出地图边界导致无法瞄准的问题，设计了一套 **双层检测机制**。
+*   **现有问题**：现在使用的 `Physics.Raycast` 依赖碰撞体。当玩家将鼠标甩到地图边缘的虚空（Void）或天空时，射线丢失目标，导致角色无法转身或技能释放失败。
+*   **解决方案**：**物理检测 + 几何数学兜底**。
+    1.  **优先层 (Physics)**：尝试 `Physics.Raycast` 检测地面层。
+        *   *目的*：获取精确的地形高度（如楼梯、斜坡），保证技能贴合地面。
+    2.  **兜底层 (Math)**：若物理检测失败，立即构建一个基于玩家脚底高度的 **虚拟数学平面 (`new Plane`)**，并执行 `Plane.Raycast`。
+        *   *目的*：利用几何平面的无限性，计算出射线与水平面的交点，确保无论鼠标在哪里，都能算出一个合法的“朝向”。
+    3.  **最后防线**：若玩家仰望天空（射线平行或远离平面），则默认朝向角色前方 `5m` 处，杜绝 `Vector3.zero` 导致的逻辑崩溃。
+#### 💡 核心代码片段
+```csharp
+// 1. 物理层：处理复杂地形
+if (TryGetMousePosition(out Vector3 hitPoint))
+{
+    finalCastPoint = hitPoint;
+}
+// 2. 数学层：处理虚空/地图外瞄准
+else
+{
+    // 创建虚拟水平面
+    Plane infiniteFloor = new Plane(Vector3.up, player.transform.position);
+    Ray ray = Camera.main.ScreenPointToRay(InputManager.Instance.MousePosition);
+
+    if (infiniteFloor.Raycast(ray, out float enter))
+    {
+        finalCastPoint = ray.GetPoint(enter);
+    }
 }
 ```
 

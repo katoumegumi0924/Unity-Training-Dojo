@@ -21,5 +21,5 @@ MonoBehaviour:
   damageDelay: 0.5
   requireTarget: 0
   castRange: 0
-  animTriggerName: 
-  strategy: {fileID: 0}
+  animTriggerName: crescent_skill
+  strategy: {fileID: 11400000, guid: b0c1997120f43124c8beaed979c2bfea, type: 2}
