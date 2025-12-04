@@ -13,10 +13,16 @@ public class InputManager : MonoBehaviour
 
     //对外提供的接口，鼠标点击事件
     public event Action OnClick;
-    //技能1，绑定Q键
-    public event Action OnSkill1;
-    //技能2，绑定W键
-    public event Action OnSkill2;
+
+
+    ////技能1，绑定Q键
+    //public event Action OnSkill1;
+    ////技能2，绑定W键
+    //public event Action OnSkill2;
+
+    //新写法：定义一个带参数的事件
+    // int 参数代表：我想使用第几个技能槽 (0, 1, 2...)
+    public event Action<int> OnUseSkill;
 
 
     //鼠标位置
@@ -37,8 +43,11 @@ public class InputManager : MonoBehaviour
             // 当 'Click' 动作发生时(performed)，触发我们的 OnClick 事件
             // ctx 是 context (上下文)，这里我们不需要它，所以忽略
             gameControls.Gameplay.Click.performed += ctx => OnClick?.Invoke();
-            gameControls.Gameplay.Skill1.performed += ctx => OnSkill1?.Invoke();
-            gameControls.Gameplay.Skill2.performed += ctx => OnSkill2?.Invoke();
+
+            //根据参数读取
+            gameControls.Gameplay.Attack.performed += ctx => OnUseSkill?.Invoke(0);
+            gameControls.Gameplay.Skill1.performed += ctx => OnUseSkill?.Invoke(1);
+            gameControls.Gameplay.Skill2.performed += ctx => OnUseSkill?.Invoke(2);
         }
         else
         {

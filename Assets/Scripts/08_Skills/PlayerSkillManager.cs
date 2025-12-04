@@ -1,57 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
-
-//单个技能栏位
-[System.Serializable]
-public class SkillSlot
-{
-    public SkillData data;          //技能静态数据
-    public float currentCooldown;   //当前冷却时间
-
-    //辅助属性 技能是否冷却
-    public bool IsReady => currentCooldown <= 0;
-
-    //计算技能当前冷却时间
-    public void Tick( float deltaTime )
-    {
-        if( currentCooldown > 0)
-        {
-            currentCooldown -= deltaTime;
-        }
-    }
-
-    //技能进入冷却时间
-    public void StartCooldown()
-    {
-        if( data  != null)
-        {
-            currentCooldown = data.cooldown;
-        }
-    }
-}
 
 public class PlayerSkillManager : MonoBehaviour
 {
     [Header("配置技能组")]
-    public List<SkillSlot> skillSlots = new List<SkillSlot>();        
+    public List<SkillSlot> skillSlots = new List<SkillSlot>();
+
+    [Header("角色基础技能组")]
+    public SkillData basePrimary;
+    public SkillData baseSkillQ;
+    public SkillData baseClassE;
+    public SkillData baseUltR;
 
     //玩家引用，需要获取技能发起的目标
     private PlayerController player;
 
     //技能指示器
+    [HideInInspector]
     public SkillIndicator skillIndicator;
-
-    //按键点击的包装方法
-    private void OnPressSkill1() => OnSkillButtonPress(0);
-    private void OnPressSkill2() => OnSkillButtonPress(1);
 
     private void Awake()
     {
         player = GetComponent<PlayerController>();
         // 加上 true参数：意思是 "includeInactive" (包含未激活的物体)
         skillIndicator = GetComponentInChildren<SkillIndicator>(true);
+
+        //初始化技能
+        // 即使没有技能，也要占个坑
+        skillSlots.Add(new SkillSlot(SkillSlotType.Primary, basePrimary)); // Index 0
+        skillSlots.Add(new SkillSlot(SkillSlotType.Skill_1, baseSkillQ));  // Index 1 (Q)
+        skillSlots.Add(new SkillSlot(SkillSlotType.Class_1, baseClassE));  // Index 2 (E)
+        skillSlots.Add(new SkillSlot(SkillSlotType.Ultimate, baseUltR));   // Index 3 (R)
     }
 
     // Start is called before the first frame update
@@ -61,10 +43,7 @@ public class PlayerSkillManager : MonoBehaviour
 
         if ( InputManager.Instance != null)
         {
-            //InputManager.Instance.OnSkill1 += UseSkill;
-            //InputManager.Instance.OnSkill1 += () => CastSkill(0);
-            InputManager.Instance.OnSkill1 += OnPressSkill1;
-            InputManager.Instance.OnSkill2 += OnPressSkill2;
+            InputManager.Instance.OnUseSkill += OnSkillButtonPress;
         }
     }
 
@@ -72,10 +51,7 @@ public class PlayerSkillManager : MonoBehaviour
     {
         if (InputManager.Instance != null)
         {
-            //InputManager.Instance.OnSkill1 -= UseSkill;
-            //InputManager.Instance.OnSkill1 += () => CastSkill(0);
-            InputManager.Instance.OnSkill1 -= OnPressSkill1;    
-            InputManager.Instance.OnSkill2 -= OnPressSkill2;
+            InputManager.Instance.OnUseSkill -= OnSkillButtonPress;
         }
     }
 
@@ -291,5 +267,20 @@ public class PlayerSkillManager : MonoBehaviour
         // 虽然赋值了，但外面看到返回 false 就不会用它
         position = Vector3.zero;
         return false;
+    }
+
+    // 供 AttackState 追到人后调用
+    public void ExecuteSkill( SkillSlot slot, Transform target)
+    {
+        //检查冷却
+        if (!slot.IsReady) return;
+
+        //切换到施法状态
+        player.playerCastState.SetSkill(slot, target, target.position);
+        player.SwitchState(player.playerCastState);
+
+        //技能开始冷却
+        slot.StartCooldown();
+
     }
 }

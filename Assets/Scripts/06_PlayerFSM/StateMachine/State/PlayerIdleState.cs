@@ -19,7 +19,7 @@ public class PlayerIdleState : IState
         if ( player != null)
         {
             //player.anim.SetFloat("Speed", 0f);
-            player.playerAnim.SetMoveSpeed(0);
+            player.playerAnim.SetMoveSpeed(0, 0);
             Debug.Log("Idle÷ÿ÷√ÀŸ∂»");
         }
 

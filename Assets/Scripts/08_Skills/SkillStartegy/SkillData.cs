@@ -25,9 +25,16 @@ public class SkillData : ScriptableObject
     public string animTriggerName;
 
     [Header("核心逻辑 (插卡带)")]
-    // 这就是策略模式的精髓！
-    // 我们不在这里写逻辑，而是持有一个逻辑策略的引用
+    // 策略模式的精髓
+    // 不在这里写逻辑，而是持有一个逻辑策略的引用
     public SkillStrategy strategy;
+}
 
-
+//技能槽技能类型，对应不同的键位
+public enum SkillSlotType
+{
+    Primary = 0,    // 普攻 (通常由武器提供)
+    Skill_1 = 1,    // 技能1 (可能是武器技能，如 Q)
+    Class_1 = 2,    // 职业技能1 (角色自带，如 E)
+    Ultimate = 3    // 大招 (角色自带，如 R)
 }

@@ -109,10 +109,19 @@ public class PlayerController : MonoBehaviour
             {
                 // 如果点到了敌人，直接扣血 (或者你可以写一个 PlayerAttackState 去追着打)
                 Debug.Log("玩家点击了敌人！");
-                //target.TakeDamage(20);
 
-                playerAttackState.SetTarget(hitInfo.transform); // 锁定目标
-                SwitchState(playerAttackState); // 切状态
+                //取出普工技能槽位
+                var basicSkillSlot = GetComponent<PlayerSkillManager>().skillSlots[0];
+
+                //切换到追击状态 
+                if( basicSkillSlot != null)
+                {
+                    Debug.Log("hitInfo: " + hitInfo.transform);
+                    Debug.Log("basicSkillSlot: " + basicSkillSlot);
+                    playerAttackState.Setup(hitInfo.transform, basicSkillSlot);
+                    SwitchState(playerAttackState);
+                }
+                
             }
             else
             {
