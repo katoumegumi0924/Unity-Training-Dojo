@@ -311,8 +311,18 @@ else
     }
 }
 ```
+### 7.4 整合技能系统与普通攻击状态
+为了解决普通攻击与技能逻辑割裂的问题，对战斗系统进行了重构，实现了 **“万物皆技能 (Everything is a Skill)”** 的设计理念。
+*   **逻辑归一化**：
+    *   **痛点**：早期版本中，普攻逻辑硬编码在 `AttackState` 中，与技能系统分离，导致代码重复且难以扩展（如无法通过换武器改变普攻方式）。
+    *   **重构**：将普通攻击定义为 **Skill Slot [0]**。无论是挥砍还是射击，都由配置在 Slot 0 里的 `SkillStrategy`（如 `MeleeScan` 或 `Projectile`）决定。
+    *   **结果**：`PlayerAttackState` 不再包含具体攻击逻辑，而是转变为一个“追击与请求执行者”，最终通过 `SkillManager.ExecuteSkill` 统一释放。
 
-
+*   **整合了两种普通攻击方式**：
+    *   **智能追击 (Smart Chase)**：点击敌人 -> 切换至 `AttackState` -> 自动寻路至射程内 -> 调用 Slot 0 攻击。
+    *   **强制攻击 (Force Attack)**：按下 **A键** -> 直接调用 `SkillManager` -> 触发 Slot 0 攻击（原地挥刀/射击）。
+    *   *复现了 RTS/MOBA 游戏的高级操作方式。*
+    
 ## 🛠️ 开发环境
 *   **Engine**: Unity 2021.3 LTS (或你的版本)
 *   **Language**: C#

@@ -128,59 +128,6 @@ public class PlayerSkillManager : MonoBehaviour
 
     }
 
-    //核心方法，根据技能的索引施放具体技能 弃用
-    private void CastSkill( int index )
-    {
-        //安全检查
-        if( index < 0 || index >= skillSlots.Count ) return;
-
-        //拿出具体的技能
-        var slot = skillSlots[index];
-        if( slot == null )  return;         //空槽位
-
-        //冷却时间检查
-        if( !slot.IsReady )
-        {
-            Debug.Log("技能冷却中");
-            return;
-        }
-        
-        //目标选择
-        //Transform target = FindObjectOfType<EnemyController>()?.transform;
-        Transform target = GetTargetUnderMouse();
-        if (target == null)
-        {
-            Debug.Log("需要选择一个目标！");
-            return;
-        }
-
-        //直接调用的释放技能方式
-        ////播放对应动画
-        //if( !string.IsNullOrEmpty(slot.data.animTriggerName))
-        //{
-        //    view.TriggleSkill(slot.data.animTriggerName);
-        //}
-
-        //// 4. 执行策略 (插卡带！)
-        //// 这里的 strategy 就是你配置的 DirectDamageStrategy
-        //slot.data.strategy.Cast(this.transform, target);
-
-        //通过施法状态来释放技能
-        var castState = player.playerCastState;
-        //传递参数
-        castState.SetSkill(slot, target, target.position);
-
-        //切换状态
-        player.SwitchState(castState);
-
-
-
-        // 5. 进入冷却
-        slot.StartCooldown();
-
-        Debug.Log($"使用了技能: {slot.data.skillName}");
-    }
-
     //获取鼠标指向的敌人，作为技能的攻击目标
     public Transform GetTargetUnderMouse()
     {
@@ -283,4 +230,24 @@ public class PlayerSkillManager : MonoBehaviour
         slot.StartCooldown();
 
     }
+
+    //覆盖指定类型（键位）的技能，供外部调用
+    public void OverrideSkill(SkillSlotType type, SkillData newSkill)
+    {
+        //根据技能类型，查找对应的技能栏位
+        var targetSlot = skillSlots.Find( s => s.slotType == type );
+
+        if (targetSlot != null)
+        {
+            //覆盖对应skillSlot上的技能
+            targetSlot.SetOverride( newSkill);
+
+            Debug.Log($"技能槽 [{type}] 已替换为: {newSkill.skillName}");
+        }
+        else
+        {
+            Debug.LogWarning($"找不到类型为 {type} 的技能槽！");
+        }
+    }
+
 }

@@ -15,11 +15,11 @@ MonoBehaviour:
   skillName: 
   icon: {fileID: 0}
   description: 
-  cooldown: 2
+  cooldown: 0.5
   manaCost: 10
-  castDuration: 1
-  damageDelay: 0.5
+  castDuration: 0.3
+  damageDelay: 0.15
   requireTarget: 0
-  castRange: 0
-  animTriggerName: 
-  strategy: {fileID: 0}
+  castRange: 2
+  animTriggerName: meleescan_skill
+  strategy: {fileID: 11400000, guid: b59f89906ca8cc74993e3bcfaa54fd12, type: 2}

@@ -9,12 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cba0ef3a8a85cb841bfd04ac5449e44f, type: 3}
-  m_Name: Strategy_MeleeScan
+  m_Script: {fileID: 11500000, guid: 3b4fda9de4d49e8449b3edbf02656ba7, type: 3}
+  m_Name: Item_TestWeapon
   m_EditorClassIdentifier: 
-  damage: 10
-  attackLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  hitEff: {fileID: 6361997728236094490, guid: fd25cbdb7c54fa4478d443fd2bea4ef1, type: 3}
-  attackRadius: 2
+  itemID: 0
+  itemName: 
+  icon: {fileID: 0}
+  itemType: 0
+  description: 
+  isStackable: 0
+  maxStackSize: 1
+  weaponModelPrefab: {fileID: 0}
+  attackBonus: 0
+  skilloverrides: []

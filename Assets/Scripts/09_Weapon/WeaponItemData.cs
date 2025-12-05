@@ -6,11 +6,11 @@ using UnityEngine;
 public class WeaponItemData : ItemData
 {
     [Header("武器特有属性")]
-    public GameObject weaponModel;      //武器模型
+    public GameObject weaponModelPrefab;      //武器模型
     public int attackBonus;             //攻击力加成
 
     [Header("武器技能配置")]
-    public List<WeaponItemData> skilloverrides;     //允许一把武器覆盖多个技能
+    public List<WeaponSkillOverride> skilloverrides;     //允许一把武器覆盖多个技能
 
     //在编辑器里自动把 Type 设为 Weapon ？
     private void OnValidate()
