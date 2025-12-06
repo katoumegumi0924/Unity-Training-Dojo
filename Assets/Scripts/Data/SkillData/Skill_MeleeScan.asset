@@ -19,7 +19,15 @@ MonoBehaviour:
   manaCost: 10
   castDuration: 0.3
   damageDelay: 0.15
+  damage: 20
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 256
   requireTarget: 0
-  castRange: 2
+  castRange: 1.5
   animTriggerName: meleescan_skill
+  skillEff: {fileID: 0}
+  hitEff: {fileID: 6361997728236094490, guid: fd25cbdb7c54fa4478d443fd2bea4ef1, type: 3}
+  flySpeed: 0
+  spawnOffset: {x: 0, y: 0, z: 0.5}
   strategy: {fileID: 11400000, guid: b59f89906ca8cc74993e3bcfaa54fd12, type: 2}

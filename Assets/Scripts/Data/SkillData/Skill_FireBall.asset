@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9cfcf4a1520b93a45a878afc16de71ee, type: 3}
-  m_Name: Skill__Smite
+  m_Name: Skill_FireBall
   m_EditorClassIdentifier: 
   skillName: 
   icon: {fileID: 0}
   description: 
   cooldown: 2
   manaCost: 10
-  castDuration: 1.15
-  damageDelay: 0.8
-  damage: 30
+  castDuration: 1
+  damageDelay: 0.5
+  damage: 10
   targetLayer:
     serializedVersion: 2
-    m_Bits: 0
-  requireTarget: 1
-  castRange: 10
-  animTriggerName: thunder_skill
-  skillEff: {fileID: 5627696518775099638, guid: 00dd6efc06d3d904f8c54712b85f5042, type: 3}
+    m_Bits: 256
+  requireTarget: 0
+  castRange: 0
+  animTriggerName: 
+  skillEff: {fileID: 6107860511624317277, guid: c8d4f7d9df53687449721061af6354c4, type: 3}
   hitEff: {fileID: 0}
-  flySpeed: 0
+  flySpeed: 5
   spawnOffset: {x: 0, y: 0, z: 0.5}
-  strategy: {fileID: 11400000, guid: 8f0715ae0a85b504e9d6c6622244551c, type: 2}
+  strategy: {fileID: 11400000, guid: b0c1997120f43124c8beaed979c2bfea, type: 2}

@@ -19,7 +19,15 @@ MonoBehaviour:
   manaCost: 10
   castDuration: 1
   damageDelay: 0.5
+  damage: 50
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
   requireTarget: 0
   castRange: 0
   animTriggerName: crescent_skill
+  skillEff: {fileID: 2866256517337646839, guid: 5644f36b17514584698e5cda585afc23, type: 3}
+  hitEff: {fileID: 0}
+  flySpeed: 10
+  spawnOffset: {x: 0, y: 0, z: 0.5}
   strategy: {fileID: 11400000, guid: b0c1997120f43124c8beaed979c2bfea, type: 2}

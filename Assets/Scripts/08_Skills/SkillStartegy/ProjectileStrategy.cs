@@ -5,20 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewProjectileStrategy", menuName = "Skills/Strategies/Projectile")]
 public class ProjectileStrategy : SkillStrategy
 {
-    [Header("投射物配置")]
-    public GameObject projectilePrefab;         //投射物预制体
-    public GameObject hitPrefab;                //击中特效预制体
-    public float flySpeed = 10f;                //飞行速度
-    public int damage = 30;
-
-    // 发射点偏移量 (比如：(0, 1.5, 1) 代表从头顶前方发射)
-    public Vector3 spawnOffset = new Vector3(0, 1.5f, 0.5f);
-
-    public override void Cast(Transform caster, Transform target, Vector3 point)
+    public override void Cast(Transform caster, Transform target, Vector3 point, SkillData data)
     {
         //计算发射点
         // TransformPoint: 把局部坐标 (相对于发射者) 转为 世界坐标
-        Vector3 spawnPos = caster.TransformPoint(spawnOffset);
+        Vector3 spawnPos = caster.TransformPoint(data.spawnOffset);
 
         // --- 计算方向逻辑 ---
         Quaternion rotation;
@@ -45,13 +36,13 @@ public class ProjectileStrategy : SkillStrategy
         }
 
         //生成投射物
-        GameObject obj = Instantiate(projectilePrefab, spawnPos, caster.rotation);
+        GameObject obj = Instantiate(data.skillEff, spawnPos, caster.rotation);
 
         //把数据传递给投射物对象
         Projectile p = obj.GetComponent<Projectile>();
         if (p != null)
         {
-            p.Setup(target, damage, flySpeed, hitPrefab  );
+            p.Setup(target, data.damage, data.flySpeed, data.hitEff  );
         }
     }
 }

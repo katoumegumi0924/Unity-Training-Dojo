@@ -48,6 +48,7 @@ public class InputManager : MonoBehaviour
             gameControls.Gameplay.Attack.performed += ctx => OnUseSkill?.Invoke(0);
             gameControls.Gameplay.Skill1.performed += ctx => OnUseSkill?.Invoke(1);
             gameControls.Gameplay.Skill2.performed += ctx => OnUseSkill?.Invoke(2);
+            gameControls.Gameplay.Skill3.performed += ctx => OnUseSkill?.Invoke(3);
         }
         else
         {

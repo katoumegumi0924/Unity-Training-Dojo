@@ -81,7 +81,7 @@ public class PlayerCastState : IState
         yield return new WaitForSeconds(currentSkill.data.damageDelay);
 
         //正式释放技能，进行技能伤害判定
-        currentSkill.data.strategy.Cast(player.transform, currentTarget, targetPoint);
+        currentSkill.data.strategy.Cast(player.transform, currentTarget, targetPoint, currentSkill.data);
             
         //等待技能后摇
         float remainingTime = currentSkill.data.castDuration - currentSkill.data.damageDelay;

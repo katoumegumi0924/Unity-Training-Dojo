@@ -15,10 +15,14 @@ MonoBehaviour:
   itemID: 0
   itemName: 
   icon: {fileID: 0}
-  itemType: 0
+  itemType: 1
   description: 
   isStackable: 0
   maxStackSize: 1
-  weaponModelPrefab: {fileID: 0}
+  weaponModelPrefab: {fileID: 1189674227078662, guid: ec413a0fd2a940f4d9475a8299d85f9c, type: 3}
   attackBonus: 0
-  skilloverrides: []
+  skilloverrides:
+  - slotType: 2
+    skillData: {fileID: 11400000, guid: cd2fbd80a092c864fb7702a7cd5ee8d9, type: 2}
+  - slotType: 1
+    skillData: {fileID: 11400000, guid: 0a54f7766985f744c8e62b423fe8eedc, type: 2}

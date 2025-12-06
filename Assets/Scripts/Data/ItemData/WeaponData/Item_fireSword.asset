@@ -19,6 +19,12 @@ MonoBehaviour:
   description: 
   isStackable: 0
   maxStackSize: 1
-  weaponModel: {fileID: 1466512764667320, guid: c3d3646a21160034081ae4ce205b8796, type: 3}
+  weaponModelPrefab: {fileID: 1599587151244576, guid: 0de82f2050779844e840890abdb725d4, type: 3}
   attackBonus: 20
-  skillConfig: {fileID: 0}
+  skilloverrides:
+  - slotType: 1
+    skillData: {fileID: 11400000, guid: cd2fbd80a092c864fb7702a7cd5ee8d9, type: 2}
+  - slotType: 2
+    skillData: {fileID: 11400000, guid: 0a54f7766985f744c8e62b423fe8eedc, type: 2}
+  - slotType: 3
+    skillData: {fileID: 11400000, guid: 5b4093b8f230ad34d92f099283c1d015, type: 2}
