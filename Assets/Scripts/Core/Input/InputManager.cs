@@ -28,6 +28,9 @@ public class InputManager : MonoBehaviour
     //鼠标位置
     public Vector2 MousePosition => gameControls.Gameplay.MousePosition.ReadValue<Vector2>();
 
+    //鼠标是否按下
+    public bool IsClickedPress => gameControls.Gameplay.Click.WasPressedThisFrame();
+
     private void Awake()
     {
         if (Instance == null)

@@ -52,7 +52,7 @@ public class AnimatedInventoryUI : MonoBehaviour
     void Update()
     {
         //按下b键，开关背包
-        if ( Input.GetKeyDown(KeyCode.B) )
+        if (Input.GetKeyDown(KeyCode.B))
         {
             TogglePanel();
         }
@@ -112,10 +112,10 @@ public class AnimatedInventoryUI : MonoBehaviour
 
                 bagButton.DOShakeAnchorPos(0.2f, 10);
 
-                
+
                 //动画播放完成之后刷新UI
                 RefreshUI();
-            } );
+            });
 
         // (可选) 同时慢慢变小
         //flyIcon.transform.DOScale(0.5f, 0.8f);
@@ -132,33 +132,33 @@ public class AnimatedInventoryUI : MonoBehaviour
         int dataCount = dataList.Count;
 
         // --- 阶段 A：数据比格子多，不够用，造新的 ---
-        if( dataCount > uiCount)
+        if (dataCount > uiCount)
         {
             int needToAdd = dataCount - uiCount;
-            for ( int i = 0; i < needToAdd; i++ )
+            for (int i = 0; i < needToAdd; i++)
             {
                 Instantiate(slotPrefab, slotParent);
             }
         }
         // --- 阶段 B：数据比格子少，多余的，删掉 ---
-        else if( dataCount < uiCount)
+        else if (dataCount < uiCount)
         {
             int needToRemove = uiCount - dataCount;
-            for( int i = 0;i < needToRemove; i++ )
+            for (int i = 0; i < needToRemove; i++)
             {
-                Destroy(slotParent.GetChild( uiCount - i - 1 ).gameObject);
+                Destroy(slotParent.GetChild(uiCount - i - 1).gameObject);
             }
         }
 
         // 此时，UI格子数量一定等于数据数量
         // --- 阶段 C：统一刷新内容 (这是最省性能的，只改属性) ---
-        for ( int i = 0; i<dataCount; i++)
+        for (int i = 0; i < dataCount; i++)
         {
             var uiItem = slotParent.GetChild(i).GetComponent<InventorySlotUI>();
             var dataItem = dataList[i];
 
             //刷新显示
-            if( uiItem != null)
+            if (uiItem != null)
             {
                 uiItem.SetItem(dataItem.itemData, dataItem.amount);
             }

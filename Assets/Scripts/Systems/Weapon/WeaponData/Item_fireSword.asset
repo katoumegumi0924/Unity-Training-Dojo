@@ -26,5 +26,3 @@ MonoBehaviour:
     skillData: {fileID: 11400000, guid: cd2fbd80a092c864fb7702a7cd5ee8d9, type: 2}
   - slotType: 2
     skillData: {fileID: 11400000, guid: 0a54f7766985f744c8e62b423fe8eedc, type: 2}
-  - slotType: 3
-    skillData: {fileID: 11400000, guid: 5b4093b8f230ad34d92f099283c1d015, type: 2}

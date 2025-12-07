@@ -41,6 +41,8 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public PlayerWeaponManager playerWeaponManager;
+
     //定义一个事件：当背包数据发生变化时触发
     public event Action OnInventoryChanged;
 
@@ -119,6 +121,27 @@ public class InventoryManager : MonoBehaviour
         else
         {
             Debug.Log("静默添加成功，等待动画播放...");
+        }
+    }
+
+    //点击背包物品时触发
+    public void OnItemClicked(ItemData item)
+    {
+        Debug.Log("按键触发#####");
+        if (item == null) return;
+
+        switch (item.itemType)
+        {
+            case ItemType.Weapon:
+                // 强转类型，然后装备
+                if (item is WeaponItemData weapon)
+                {
+                    playerWeaponManager.EquipWeapon(weapon);
+                }
+                break;
+            case ItemType.Consumble:
+                Debug.Log("喝了药水 (逻辑待开发)");
+                break;
         }
     }
 

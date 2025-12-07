@@ -323,6 +323,50 @@ else
     *   **强制攻击 (Force Attack)**：按下 **A键** -> 直接调用 `SkillManager` -> 触发 Slot 0 攻击（原地挥刀/射击）。
     *   *复现了 RTS/MOBA 游戏的高级操作方式。*
     
+
+## 附录 问题记录
+
+### 1. New Input System 与 UI 事件冲突
+*   **问题现象**：
+    在 `InputAction.performed` 回调中调用 `EventSystem.current.IsPointerOverGameObject()` 时，Unity 报出警告，提示只能获取到上一帧的 UI 状态。
+*   **原因分析 (Root Cause)**：
+    *   **时序错位**：Input System 的事件处理发生在帧的最开始，早于 Unity 内部 `EventSystem.Update()` 的执行。
+    *   **数据过时**：在回调触发那一刻，UI 射线检测尚未执行，因此无法准确判断鼠标是否悬停在 UI 上。
+*   **解决方案**：
+    *   放弃在回调中处理点击逻辑。
+    *   改为在 `Update()` 生命周期中**轮询 (Poll)** 输入状态。
+    *   **执行顺序**：Input Update -> EventSystem Update -> **Game Update (IsPointerOverGameObject ✅)**。
+
+###  Unity 核心生命周期
+为了解决时序依赖问题（如相机抖动、事件注销、动画同步），整理了关键生命周期的严格执行顺序：
+
+1.  **初始化阶段 (Initialization)**
+    *   `Awake`：脚本实例化时执行（自理阶段，初始化自身变量）。
+    *   `OnEnable`：脚本启用时执行（**注册事件**）。
+    *   `Start`：所有 Awake 执行完毕后执行（社交阶段，获取外部引用）。
+
+2.  **物理阶段 (Physics Loop)**
+    *   `FixedUpdate`：固定频率执行（施加物理力）。
+    *   **[PhysX Simulation]**：物理引擎计算碰撞与移动。
+    *   `OnTrigger/OnCollision`：物理结算后的回调。
+
+3.  **逻辑与输入阶段 (Game Logic)**
+    *   **[Input System Update]**：处理硬件输入，触发回调。
+    *   `Update`：核心游戏逻辑（状态机、计时器、输入轮询）。
+    *   `yield return null`：协程在此暂停，等待下一帧。
+
+4.  **动画与跟随阶段 (Animation & Camera)**
+    *   **[Internal Animation Update]**：动画系统评估当前帧。
+    *   **[Animation Events]**：**触发动画事件回调**（如攻击判定）。
+    *   `LateUpdate`：逻辑与动画完全结束后执行（**相机跟随**、IK 计算必须放在这里，防止画面抖动）。
+
+5.  **渲染阶段 (Rendering)**
+    *   `OnDrawGizmos` -> **[GPU Rendering]**。
+
+6.  **销毁阶段 (Decommissioning)**
+    *   `OnDisable`：物体隐藏或脚本禁用时执行（**必须在此注销事件**）。
+    *   `OnDestroy`：物体被销毁的帧末执行（清理内存/单例引用）。
+
 ## 🛠️ 开发环境
 *   **Engine**: Unity 2021.3 LTS (或你的版本)
 *   **Language**: C#

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -50,11 +51,11 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //此时 InputManager 肯定醒了
-        if (InputManager.Instance != null)
-        {
-            InputManager.Instance.OnClick += OnClickMap;
-        }
+        ////此时 InputManager 肯定醒了
+        //if (InputManager.Instance != null)
+        //{
+        //    InputManager.Instance.OnClick += OnClickMap;
+        //}
 
         //第一次进入待机状态
         stateMachine.Initialize(playerIdleState);
@@ -68,6 +69,12 @@ public class PlayerController : MonoBehaviour
     {
         //轮询调用 当前状态的Update
         stateMachine.Update();
+
+        //监听点击
+        if( InputManager.Instance != null && InputManager.Instance.IsClickedPress)
+        {
+            OnClickMap();
+        }
     }
 
     //对接InputManager
@@ -78,17 +85,25 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        if (InputManager.Instance != null)
-        {
-            InputManager.Instance.OnClick -= OnClickMap;
-        }
+        //if (InputManager.Instance != null)
+        //{
+        //    InputManager.Instance.OnClick -= OnClickMap;
+        //}
     }
 
     //处理点击逻辑
     private void OnClickMap()
     {
+        // ---核心修复：UI 拦截 ---
+        // IsPointerOverGameObject() 的意思是：鼠标指针现在是否悬停在某个 UI 元素上？
+        // 如果是，直接 return，不执行后面的射线移动逻辑。
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         //施法状态禁止移动打断
-        if( stateMachine.CurrentState == playerCastState)
+        if ( stateMachine.CurrentState == playerCastState)
         {
             return;
         }
