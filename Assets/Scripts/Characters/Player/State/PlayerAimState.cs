@@ -5,15 +5,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerAimState : IState
 {
-    private PlayerController player;
+    private PlayerStateMachine fsm;
     private SkillSlot currentSkill;         //当前要瞄准的技能
 
-    private PlayerSkillManager skillMgr;
-
-    public PlayerAimState(PlayerController player)
+    public PlayerAimState(PlayerStateMachine fsm)
     {
-        this.player = player;
-        skillMgr = player.GetComponent<PlayerSkillManager>();
+        this.fsm = fsm;
     }
 
     //进入状态前需要设置要瞄准的技能是哪个
@@ -27,15 +24,15 @@ public class PlayerAimState : IState
         Debug.Log($"[Aim] 开始瞄准: {currentSkill.data.skillName}");
 
         //瞄准状态停止移动
-        player.agent.isStopped = true;
-        player.agent.velocity = Vector3.zero;
-        player.agent.ResetPath();
-        player.playerAnim.SetMoveSpeed(0,0);
+        fsm.player.agent.isStopped = true;
+        fsm.player.agent.velocity = Vector3.zero;
+        fsm.player.agent.ResetPath();
+        fsm.player.characterAnimation.SetMoveSpeed(0,0);
 
         //显示指示器
-        if( skillMgr != null && skillMgr.skillIndicator != null)
+        if( fsm.player.skillManager != null && fsm.player.skillManager.skillIndicator != null)
         {
-            skillMgr.skillIndicator.Show(currentSkill.data.castRange);
+            fsm.player.skillManager.skillIndicator.Show(currentSkill.data.castRange);
         }
 
         //监听输入 决定是选择目标释放技能还是取消释放
@@ -62,9 +59,9 @@ public class PlayerAimState : IState
     public void OnExit()
     {
         //退出瞄准状态要隐藏指示器
-        if( skillMgr!=null && skillMgr.skillIndicator != null )
+        if( fsm.player.skillManager !=null && fsm.player.skillManager.skillIndicator != null )
         {
-            skillMgr.skillIndicator.Hide();
+            fsm.player.skillManager.skillIndicator.Hide();
         }
 
         //移除时间监听防止内存泄露
@@ -85,8 +82,8 @@ public class PlayerAimState : IState
         if( Physics.Raycast( ray, out hitInfo, 1000f, LayerMask.GetMask("Ground") ))
         {
             Vector3 lookPos = hitInfo.point;
-            lookPos.y = player.transform.position.y; // 保持水平
-            player.transform.LookAt( lookPos );
+            lookPos.y = fsm.player.transform.position.y; // 保持水平
+            fsm.player.transform.LookAt( lookPos );
         }
     }
 
@@ -95,12 +92,12 @@ public class PlayerAimState : IState
     {
         //获取目标
         //Transform target = skillMgr.GetTargetUnderMouse();
-        Transform target = skillMgr.GetSmartTarget();
+        Transform target = fsm.player.skillManager.GetSmartTarget();
 
         if ( target != null )
         {
             // --- 距离校验 ---
-            float dist = Vector3.Distance(player.transform.position, target.position);
+            float dist = Vector3.Distance(fsm.player.transform.position, target.position);
             if (dist > currentSkill.data.castRange)
             {
                 // 可以在这里播一个 "哔哔" 的错误音效，或者飘字 "距离太远"
@@ -109,20 +106,20 @@ public class PlayerAimState : IState
             }
 
             //设置 技能释放状态参数
-            player.playerCastState.SetSkill(currentSkill, target, target.position);
+            fsm.playerCastState.SetSkill(currentSkill, target, target.position);
             //切换到技能释放状态
-            player.SwitchState(player.playerCastState);
+            fsm.SwitchState(fsm.playerCastState);
         }
-        //没有点击到敌人 切回待机状态
+        //没有点击到敌人 切回待机状态    
         else
         {
-            player.SwitchState(player.playerIdleState);
+            fsm.SwitchState(fsm.playerIdleState);
         }
     }
 
     private void OnCancelAim()
     {
         // 取消瞄准，回到待机
-        player.SwitchState(player.playerIdleState);
+        fsm.SwitchState(fsm.playerIdleState);
     }
 }

@@ -5,11 +5,11 @@ using UnityEngine;
 //施法状态，所有技能都由这个状态管理
 public class PlayerCastState : IState
 {
-    private PlayerController player;
+    private PlayerStateMachine fsm;
 
-    public PlayerCastState(PlayerController player)
+    public PlayerCastState(PlayerStateMachine fsm)
     {
-        this.player = player;
+        this.fsm = fsm;
     }
 
     //要施放的技能信息
@@ -29,40 +29,40 @@ public class PlayerCastState : IState
     public void OnEnter()
     {
         //施法期间停止移动
-        player.agent.isStopped = true;
-        player.agent.velocity = Vector3.zero;
-        player.agent.ResetPath();
-        player.playerAnim.SetMoveSpeed(0);
+        fsm.player.agent.isStopped = true;
+        fsm.player.agent.velocity = Vector3.zero;
+        fsm.player.agent.ResetPath();
+        fsm.player.characterAnimation.SetMoveSpeed(0);
 
         //面向施法目标（如果有）
         if( currentTarget != null)
         {
-            player.transform.LookAt( new Vector3( currentTarget.position.x, player.transform.position.y, currentTarget.position.z ) );
+            fsm.player.transform.LookAt( new Vector3( currentTarget.position.x, fsm.player.transform.position.y, currentTarget.position.z ) );
         }
         //没有目标，看向鼠标指定的施法点
         else
         {
             Vector3 lookPos = targetPoint;
-            lookPos.y = player.transform.position.y;
-            player.transform.LookAt( lookPos );
+            lookPos.y = fsm.player.transform.position.y;
+            fsm.player.transform.LookAt( lookPos );
         }
 
         //播放对应的施法动画
         if( !string.IsNullOrEmpty(currentSkill.data.animTriggerName))
         {
-            player.playerAnim.TriggleSkill(currentSkill.data.animTriggerName);
+            fsm.player.characterAnimation.TriggleSkill(currentSkill.data.animTriggerName);
         }
 
         //协程处理延迟伤害 和 结束施法状态
         // 4. 开启协程：处理“延迟伤害”和“状态结束”
         // 注意：IState 是纯类，不能开启协程，需要借用 player (MonoBehaviour) 来开
-        player.StartCoroutine(CastRoutine());
+        fsm.StartCoroutine(CastRoutine());
     }
 
     public void OnExit()
     {
         // 恢复行动自由
-        player.agent.isStopped = false;
+        fsm.player.agent.isStopped = false;
 
     }
 
@@ -81,7 +81,7 @@ public class PlayerCastState : IState
         yield return new WaitForSeconds(currentSkill.data.damageDelay);
 
         //正式释放技能，进行技能伤害判定
-        currentSkill.data.strategy.Cast(player.transform, currentTarget, targetPoint, currentSkill.data);
+        currentSkill.data.strategy.Cast(fsm.player.transform, currentTarget, targetPoint, currentSkill.data);
             
         //等待技能后摇
         float remainingTime = currentSkill.data.castDuration - currentSkill.data.damageDelay;
@@ -91,6 +91,6 @@ public class PlayerCastState : IState
         }
 
         //施法结束，返回Idle状态
-        player.SwitchState(player.playerIdleState);
+        fsm.SwitchState(fsm.playerIdleState);
     }
 }

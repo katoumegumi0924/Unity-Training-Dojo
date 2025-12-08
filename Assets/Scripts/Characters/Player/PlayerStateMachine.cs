@@ -4,14 +4,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
-public class PlayerController : MonoBehaviour
+public class PlayerStateMachine : MonoBehaviour
 {
-    //相关组件
-    //public Animator anim {  get; private set; }
-    public CharacterAnimation playerAnim;
-    public NavMeshAgent agent { get; private set; }
-    public LineRenderer line { get; private set; }
-
     //移动目的地
     public Vector3 targetPos;
 
@@ -27,13 +21,12 @@ public class PlayerController : MonoBehaviour
     [Header("输入配置")]
     public LayerMask clickableLayers;
 
+    //状态机 持有 Player类的引用
+    public Player player;
+
     private void Awake()
     {
-        //初始化 获取组件
-        // 因为模型通常是 Player 的子物体，所以用 GetComponentInChildren
-        playerAnim = GetComponentInChildren<CharacterAnimation>();
-        agent = GetComponent<NavMeshAgent>();
-        line = GetComponent<LineRenderer>();
+        player = GetComponent<Player>();
 
         //初始化状态机
         stateMachine = new StateMachine();
@@ -43,20 +36,11 @@ public class PlayerController : MonoBehaviour
         playerCastState = new PlayerCastState(this);
         playerAimState = new PlayerAimState(this);
 
-        // 默认设置??
-        agent.stoppingDistance = 0.1f;
-        if (line != null) line.positionCount = 0;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        ////此时 InputManager 肯定醒了
-        //if (InputManager.Instance != null)
-        //{
-        //    InputManager.Instance.OnClick += OnClickMap;
-        //}
-
         //第一次进入待机状态
         stateMachine.Initialize(playerIdleState);
 
@@ -70,8 +54,11 @@ public class PlayerController : MonoBehaviour
         //轮询调用 当前状态的Update
         stateMachine.Update();
 
-        //监听点击
-        if( InputManager.Instance != null && InputManager.Instance.IsClickedPress)
+        //监听点击 在Update中轮询是否点击鼠标，
+        //因为OnClickMap需要检测鼠标指针现在是否悬停在某个 UI 元素上
+        //如果使用事件监听，会在Input输入时直接调用OnClickMap，
+        //此时当前帧 射线检测还未触发，只能获取上一帧的鼠标位置，会触发警告
+        if ( InputManager.Instance != null && InputManager.Instance.IsClickedPress)
         {
             OnClickMap();
         }
@@ -85,10 +72,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        //if (InputManager.Instance != null)
-        //{
-        //    InputManager.Instance.OnClick -= OnClickMap;
-        //}
+
     }
 
     //处理点击逻辑
@@ -151,19 +135,6 @@ public class PlayerController : MonoBehaviour
     public void SwitchState( IState newState )
     {
         stateMachine.ChangeState( newState );
-    }
-
-    // 专门处理攻击判定的方法
-    public void OnAnimationAttackHit()
-    {
-        Debug.Log("【关键帧触发】刀砍到肉了！开始计算伤害...");
-
-        // 这里写之前的扣血逻辑
-        // 1. 获取当前攻击目标
-        // 2. 计算距离 (防止挥空)
-        // 3. target.TakeDamage(20);
-
-        // 为了测试，先只打印日志
     }
 
 }

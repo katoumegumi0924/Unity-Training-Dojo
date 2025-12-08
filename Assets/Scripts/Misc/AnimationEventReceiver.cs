@@ -5,7 +5,7 @@ using UnityEngine;
 public class AnimationEventReceiver : MonoBehaviour
 {
     // 用来持有父物体的控制器引用
-    private PlayerController playerCtrl;
+    private PlayerStateMachine playerCtrl;
     private EnemyController enemyCtrl;
 
     //溶解特效
@@ -15,7 +15,7 @@ public class AnimationEventReceiver : MonoBehaviour
     void Start()
     {
         //尝试获取父物体上的控制器对象
-        playerCtrl = GetComponentInParent<PlayerController>();
+        playerCtrl = GetComponentInParent<PlayerStateMachine>();
         enemyCtrl = GetComponentInParent<EnemyController>();
 
         // 获取溶解脚本

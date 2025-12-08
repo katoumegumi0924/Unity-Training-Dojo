@@ -16,7 +16,7 @@ public class PlayerSkillManager : MonoBehaviour
     public SkillData baseUltR;
 
     //玩家引用，需要获取技能发起的目标
-    private PlayerController player;
+    private PlayerStateMachine player;
 
     //技能指示器
     [HideInInspector]
@@ -24,7 +24,7 @@ public class PlayerSkillManager : MonoBehaviour
 
     private void Awake()
     {
-        player = GetComponent<PlayerController>();
+        player = GetComponent<PlayerStateMachine>();
         // 加上 true参数：意思是 "includeInactive" (包含未激活的物体)
         skillIndicator = GetComponentInChildren<SkillIndicator>(true);
 

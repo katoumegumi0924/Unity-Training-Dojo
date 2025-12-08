@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerIdleState : IState
 {
-    private PlayerController player;
+    private PlayerStateMachine fsm;
 
-    public PlayerIdleState( PlayerController player )
+    public PlayerIdleState( PlayerStateMachine fsm )
     {
-        this.player = player;
+        this.fsm = fsm;
     }
 
     public void OnEnter()
@@ -16,15 +16,15 @@ public class PlayerIdleState : IState
         Debug.Log("进入Idle");
 
         //停止移动动画
-        if ( player != null)
+        if ( fsm.player != null)
         {
             //player.anim.SetFloat("Speed", 0f);
-            player.playerAnim.SetMoveSpeed(0, 0);
+            fsm.player.characterAnimation.SetMoveSpeed(0, 0);
             Debug.Log("Idle重置速度");
         }
 
         // 这是一个好习惯：切回待机时重置路径，防止意外滑动
-        player.agent.ResetPath();
+        fsm.player.agent.ResetPath();
     }
 
     public void OnExit()
