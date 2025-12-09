@@ -366,9 +366,3 @@ else
 6.  **销毁阶段 (Decommissioning)**
     *   `OnDisable`：物体隐藏或脚本禁用时执行（**必须在此注销事件**）。
     *   `OnDestroy`：物体被销毁的帧末执行（清理内存/单例引用）。
-
-## 🛠️ 开发环境
-*   **Engine**: Unity 2021.3 LTS (或你的版本)
-*   **Language**: C#
-*   **IDE**: Visual Studio 2022
-*   **Tools**: Git, ScreenToGif
